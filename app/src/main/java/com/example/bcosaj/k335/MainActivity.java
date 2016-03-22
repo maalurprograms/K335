@@ -13,6 +13,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.security.acl.Group;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -31,6 +33,18 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        Group group = (Group)findViewById(R.id.menu_content);
+
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.clear();
+        for (int i=0; i<10;i++){
+            menu.add(0, i, Menu.NONE, "Test").setIcon(R.drawable.ic_person_white_48px);
+        }
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
