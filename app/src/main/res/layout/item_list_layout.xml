@@ -2,7 +2,8 @@
 <RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:paddingTop="20dp">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/post_header"
@@ -26,10 +27,27 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/post_content"
+        android:id="@+id/tw_fb_post_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/post_header"
-        android:textSize="15dp" />
+        android:textSize="15dp"
+        android:layout_marginBottom="20dp"/>
+
+    <ImageView
+        android:id="@+id/in_yt_post_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/post_header"
+        android:layout_marginBottom="20dp"/>
+
+    <TextView
+        android:id="@+id/yt_content_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/in_yt_post_content"
+        android:textSize="15dp"
+        android:layout_marginBottom="20dp"
+        android:textAlignment="center"/>
 
 </RelativeLayout>

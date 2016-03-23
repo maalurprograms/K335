@@ -7,13 +7,11 @@ import android.widget.ImageView;
  */
 public class Post {
     public final String CREATOR;
-    public final String CONTENT;
     public final int SOURCE;
     public final String DATE;
 
-    public Post(String CREATOR, String CONTENT, int SOURCE, String DATE) {
+    public Post(String CREATOR, int SOURCE, String DATE) {
         this.CREATOR = CREATOR;
-        this.CONTENT = CONTENT;
         this.SOURCE = SOURCE;
         this.DATE = DATE;
     }
