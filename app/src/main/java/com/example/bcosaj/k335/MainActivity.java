@@ -1,8 +1,7 @@
 package com.example.bcosaj.k335;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -21,11 +20,21 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
+import android.util.Log;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private static String TAG = "TEST";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,13 +54,12 @@ public class MainActivity extends AppCompatActivity
 //        ListView listView = (ListView) findViewById(R.id.nav_bar_list);
 
         ArrayList<Post> posts = new ArrayList<Post>();
-        posts.add(new TwitterFacebookPost("Jonas Cosandey", "Hello World this should be a long text but i dont know what to write so i just type some things so i can test.", R.drawable.twitter_icon, "12.2.1234"));
-        posts.add(new TwitterFacebookPost("Jonas Cosandey", "Facebook Test", R.drawable.facebook_icon, "2.2.1234"));
-        posts.add(new YouTubePost("Jonas Cosandey", R.drawable.youtube_icon, Uri.parse("https://www.youtube.com/watch?v=Ld4H349oyTA&ebc=ANyPxKp2b6BBFnv5GIvRdg0nvC6OJ1yCQnAhh-aZG7vl3wPjG3xDiS9edL4rpjpkCeqzSL1MgpzxIApyCZ9kRHXK2IHZthnhpg"), "A Video Example", R.drawable.youtube_icon, "12.3.123"));
-        posts.add(new InstagramPost("Jonas Cosandey", R.drawable.instagram_icon, R.drawable.instagram_icon, "21.3.43"));
+        posts.add(new Post("Jonas Cosandey The Third of Maalurion and King of the Maluurioses.", "Hello World this should be a long text but i dont know what to write so i just type some things so i can test.", R.drawable.twitter_icon, "12.2.1234"));
+
+
 
         ListView news = (ListView)findViewById(R.id.main_news_list);
-        PostAdapter newsAdapter = new PostAdapter(this, R.layout.item_list_layout, posts);
+        PostAdapter newsAdapter = new PostAdapter(this, R.layout.twitter_layout, posts);
         news.setAdapter(newsAdapter);
 
 //        AdapterView.OnItemClickListener mListClickedHandler = new AdapterView.OnItemClickListener() {
@@ -86,7 +94,77 @@ public class MainActivity extends AppCompatActivity
 //        // Set the list's click listener
 //        listView.setOnItemClickListener(new DrawerItemClickListener());
 
+        //jsonFetch("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=UUbW18JZRgko_mOGm5er8Yzg&key=AIzaSyDSkGmwHSqOMxvfF0XtlqbjTIUqkDwTEyU");
+        jsonFetch("https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forUsername=OneDirectionVEVO&key=AIzaSyDSkGmwHSqOMxvfF0XtlqbjTIUqkDwTEyU");
+
     }
+
+    private void jsonFetch(String url)
+    {
+        new AsyncTask<String, String, String>()
+        {
+            @Override
+            protected String doInBackground(String[] badi) {
+                String msg = "";
+                try
+                {
+                    URL url = new URL(badi[0]);
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    msg = IOUtils.toString(conn.getInputStream());
+                    Log.v(TAG, "Loaded data successfully");
+                }
+                catch(Exception e)
+                {
+                    Log.v(TAG, "Exception while loading data");
+                    e.printStackTrace();
+                }
+                return msg;
+            }
+
+            public void onPostExecute(String result)
+            {
+                String playlistId = parsePlaylistId(result);
+                Log.i(TAG, playlistId);
+                //String videoId = parseVideoId(result);
+            }
+        }.execute(url);
+    }
+
+    private String parseVideoId(String jsonstring) {
+        Log.v(TAG, "Starting parse....");
+        ArrayAdapter temps = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+        try {
+            JSONObject jsonObj = new JSONObject(jsonstring);
+            JSONArray items = jsonObj.getJSONArray("items");
+            JSONObject o = items.getJSONObject(0);
+            JSONObject snippet = o.getJSONObject("snippet");
+            JSONObject resource = snippet.getJSONObject("resourceId");
+            String videoid = resource.getString("videoId");
+            Log.v(TAG, videoid); // GOT ID!!
+            return videoid;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    private String parsePlaylistId(String jsonstring) {
+        Log.v(TAG, "Starting parse....");
+        ArrayAdapter temps = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+        try {
+            JSONObject jsonObj = new JSONObject(jsonstring);
+            JSONArray items = jsonObj.getJSONArray("items");
+            JSONObject o = items.getJSONObject(0);
+            String videoid = o.getString("id");
+            Log.v(TAG, videoid); // GOT ID!!
+            return videoid;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
@@ -140,73 +218,39 @@ public class MainActivity extends AppCompatActivity
         private class ViewHolder {
             ImageView srclogo;
             TextView creator;
-            ImageView contentYT_I;
-            TextView contentT_FB;
-            TextView content_decription;
+            TextView content;
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-
-            Post post = postList.get(position);
 
             ViewHolder holder = null;
             Log.v("ConvertView", String.valueOf(position));
 
             if (convertView == null) {
                 LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-                convertView = vi.inflate(R.layout.item_list_layout, null);
+                convertView = vi.inflate(R.layout.twitter_layout, null);
 
                 holder = new ViewHolder();
                 holder.srclogo = (ImageView) convertView.findViewById(R.id.src_icon);
                 holder.creator = (TextView) convertView.findViewById(R.id.post_creator);
-                holder.contentYT_I = (ImageView) convertView.findViewById(R.id.in_yt_post_content);
-                holder.contentT_FB = (TextView) convertView.findViewById(R.id.tw_fb_post_content);
-                holder.content_decription = (TextView) convertView.findViewById(R.id.yt_content_description);
-
-
+                holder.content = (TextView) convertView.findViewById(R.id.post_content);
                 convertView.setTag(holder);
+
+                holder.creator.setOnClickListener( new View.OnClickListener() {
+                    public void onClick(View v) {
+                        Log.i("INFO", "Clicked on Account");
+                    }
+                });
             }
             else {
                 holder = (ViewHolder) convertView.getTag();
             }
 
-
+            Post post = postList.get(position);
             holder.srclogo.setImageResource(post.SOURCE);
             holder.creator.setText(post.CREATOR);
-
-            if (post instanceof TwitterFacebookPost){
-                TwitterFacebookPost convertedPost = (TwitterFacebookPost)post;
-                holder.contentT_FB.setText(convertedPost.CONTENT);
-
-                holder.contentT_FB.setVisibility(View.VISIBLE);
-                holder.contentYT_I.setVisibility(View.GONE);
-                holder.content_decription.setVisibility(View.VISIBLE);
-
-            } else if (post instanceof YouTubePost) {
-                final YouTubePost convertedPost = (YouTubePost) post;
-                holder.contentYT_I.setImageResource(convertedPost.CONTENT);
-                holder.content_decription.setText(convertedPost.DESCRIPTION);
-
-                holder.contentT_FB.setVisibility(View.GONE);
-                holder.contentYT_I.setVisibility(View.VISIBLE);
-                holder.content_decription.setVisibility(View.VISIBLE);
-
-                holder.contentYT_I.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        startActivity(new Intent(Intent.ACTION_VIEW, convertedPost.LINK));
-                    }
-                });
-            } else{
-                InstagramPost convertedPost = (InstagramPost) post;
-                holder.contentYT_I.setImageResource(convertedPost.CONTENT);
-
-                holder.contentT_FB.setVisibility(View.GONE);
-                holder.contentYT_I.setVisibility(View.VISIBLE);
-                holder.content_decription.setVisibility(View.GONE);
-            }
+            holder.content.setText(post.CONTENT);
 
             return convertView;
 
