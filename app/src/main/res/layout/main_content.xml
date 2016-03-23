@@ -10,6 +10,13 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.example.bcosaj.k335.MainActivity"
-    tools:showIn="@layout/app_bar_main">
+    tools:showIn="@layout/main">
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/main_news_list">
+
+    </ListView>
 
 </RelativeLayout>
