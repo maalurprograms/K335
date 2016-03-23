@@ -12,10 +12,12 @@ public class YouTubePost extends Post {
 
     public final int CONTENT;
     public final Uri LINK;
+    public final String DESCRIPTION;
 
-    public YouTubePost(String CREATOR, int CONTENT, Uri LINK, int SOURCE, String DATE) {
+    public YouTubePost(String CREATOR, int CONTENT, Uri LINK, String DESCRIPTION, int SOURCE, String DATE) {
         super(CREATOR, SOURCE, DATE);
         this.CONTENT = CONTENT;
         this.LINK = LINK;
+        this.DESCRIPTION = DESCRIPTION;
     }
 }

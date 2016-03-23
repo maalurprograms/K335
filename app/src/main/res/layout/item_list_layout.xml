@@ -31,12 +31,23 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/post_header"
-        android:textSize="15dp" />
+        android:textSize="15dp"
+        android:layout_marginBottom="20dp"/>
 
     <ImageView
         android:id="@+id/in_yt_post_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/post_header"/>
+        android:layout_below="@id/post_header"
+        android:layout_marginBottom="20dp"/>
+
+    <TextView
+        android:id="@+id/yt_content_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/in_yt_post_content"
+        android:textSize="15dp"
+        android:layout_marginBottom="20dp"
+        android:textAlignment="center"/>
 
 </RelativeLayout>

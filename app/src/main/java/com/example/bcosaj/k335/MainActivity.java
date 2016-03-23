@@ -47,11 +47,11 @@ public class MainActivity extends AppCompatActivity
         ArrayList<Post> posts = new ArrayList<Post>();
         posts.add(new TwitterFacebookPost("Jonas Cosandey", "Hello World this should be a long text but i dont know what to write so i just type some things so i can test.", R.drawable.twitter_icon, "12.2.1234"));
         posts.add(new TwitterFacebookPost("Jonas Cosandey", "Facebook Test", R.drawable.facebook_icon, "2.2.1234"));
-        posts.add(new YouTubePost("Jonas Cosandey", R.drawable.youtube_icon, Uri.parse("https://www.youtube.com/watch?v=Ld4H349oyTA&ebc=ANyPxKp2b6BBFnv5GIvRdg0nvC6OJ1yCQnAhh-aZG7vl3wPjG3xDiS9edL4rpjpkCeqzSL1MgpzxIApyCZ9kRHXK2IHZthnhpg"), R.drawable.youtube_icon, "12.3.123"));
+        posts.add(new YouTubePost("Jonas Cosandey", R.drawable.youtube_icon, Uri.parse("https://www.youtube.com/watch?v=Ld4H349oyTA&ebc=ANyPxKp2b6BBFnv5GIvRdg0nvC6OJ1yCQnAhh-aZG7vl3wPjG3xDiS9edL4rpjpkCeqzSL1MgpzxIApyCZ9kRHXK2IHZthnhpg"), "A Video Example", R.drawable.youtube_icon, "12.3.123"));
         posts.add(new InstagramPost("Jonas Cosandey", R.drawable.instagram_icon, R.drawable.instagram_icon, "21.3.43"));
 
         ListView news = (ListView)findViewById(R.id.main_news_list);
-        PostAdapter newsAdapter = new PostAdapter(this, R.layout.uni_layout, posts);
+        PostAdapter newsAdapter = new PostAdapter(this, R.layout.item_list_layout, posts);
         news.setAdapter(newsAdapter);
 
 //        AdapterView.OnItemClickListener mListClickedHandler = new AdapterView.OnItemClickListener() {
@@ -142,6 +142,7 @@ public class MainActivity extends AppCompatActivity
             TextView creator;
             ImageView contentYT_I;
             TextView contentT_FB;
+            TextView content_decription;
         }
 
         @Override
@@ -155,24 +156,15 @@ public class MainActivity extends AppCompatActivity
             if (convertView == null) {
                 LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-//                if (post instanceof TwitterFacebookPost) {
-//                    convertView = vi.inflate(R.layout.uni_layout, null);
-//                } else {
-//                    convertView = vi.inflate(R.layout.twitter_facebook_layout, null);
-//                }
-
-                convertView = vi.inflate(R.layout.uni_layout, null);
+                convertView = vi.inflate(R.layout.item_list_layout, null);
 
                 holder = new ViewHolder();
                 holder.srclogo = (ImageView) convertView.findViewById(R.id.src_icon);
                 holder.creator = (TextView) convertView.findViewById(R.id.post_creator);
-//                if (post instanceof YouTubePost || post instanceof  InstagramPost){
-//                    holder.contentYT_I = (ImageView) convertView.findViewById(R.id.post_content);
-//                } else {
-//                    holder.contentT_FB = (TextView) convertView.findViewById(R.id.post_content);
-//                }
                 holder.contentYT_I = (ImageView) convertView.findViewById(R.id.in_yt_post_content);
                 holder.contentT_FB = (TextView) convertView.findViewById(R.id.tw_fb_post_content);
+                holder.content_decription = (TextView) convertView.findViewById(R.id.yt_content_description);
+
 
                 convertView.setTag(holder);
             }
@@ -187,9 +179,19 @@ public class MainActivity extends AppCompatActivity
             if (post instanceof TwitterFacebookPost){
                 TwitterFacebookPost convertedPost = (TwitterFacebookPost)post;
                 holder.contentT_FB.setText(convertedPost.CONTENT);
+
+                holder.contentT_FB.setVisibility(View.VISIBLE);
+                holder.contentYT_I.setVisibility(View.GONE);
+                holder.content_decription.setVisibility(View.VISIBLE);
+
             } else if (post instanceof YouTubePost) {
                 final YouTubePost convertedPost = (YouTubePost) post;
                 holder.contentYT_I.setImageResource(convertedPost.CONTENT);
+                holder.content_decription.setText(convertedPost.DESCRIPTION);
+
+                holder.contentT_FB.setVisibility(View.GONE);
+                holder.contentYT_I.setVisibility(View.VISIBLE);
+                holder.content_decription.setVisibility(View.VISIBLE);
 
                 holder.contentYT_I.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -200,6 +202,10 @@ public class MainActivity extends AppCompatActivity
             } else{
                 InstagramPost convertedPost = (InstagramPost) post;
                 holder.contentYT_I.setImageResource(convertedPost.CONTENT);
+
+                holder.contentT_FB.setVisibility(View.GONE);
+                holder.contentYT_I.setVisibility(View.VISIBLE);
+                holder.content_decription.setVisibility(View.GONE);
             }
 
             return convertView;
