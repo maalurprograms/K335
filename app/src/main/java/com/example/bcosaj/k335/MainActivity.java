@@ -1,6 +1,7 @@
 package com.example.bcosaj.k335;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -19,11 +20,21 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
+import android.util.Log;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private static String TAG = "TEST";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +55,8 @@ public class MainActivity extends AppCompatActivity
 
         ArrayList<Post> posts = new ArrayList<Post>();
         posts.add(new Post("Jonas Cosandey The Third of Maalurion and King of the Maluurioses.", "Hello World this should be a long text but i dont know what to write so i just type some things so i can test.", R.drawable.twitter_icon, "12.2.1234"));
+
+
 
         ListView news = (ListView)findViewById(R.id.main_news_list);
         PostAdapter newsAdapter = new PostAdapter(this, R.layout.twitter_layout, posts);
@@ -81,7 +94,77 @@ public class MainActivity extends AppCompatActivity
 //        // Set the list's click listener
 //        listView.setOnItemClickListener(new DrawerItemClickListener());
 
+        //jsonFetch("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=UUbW18JZRgko_mOGm5er8Yzg&key=AIzaSyDSkGmwHSqOMxvfF0XtlqbjTIUqkDwTEyU");
+        jsonFetch("https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forUsername=OneDirectionVEVO&key=AIzaSyDSkGmwHSqOMxvfF0XtlqbjTIUqkDwTEyU");
+
     }
+
+    private void jsonFetch(String url)
+    {
+        new AsyncTask<String, String, String>()
+        {
+            @Override
+            protected String doInBackground(String[] badi) {
+                String msg = "";
+                try
+                {
+                    URL url = new URL(badi[0]);
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    msg = IOUtils.toString(conn.getInputStream());
+                    Log.v(TAG, "Loaded data successfully");
+                }
+                catch(Exception e)
+                {
+                    Log.v(TAG, "Exception while loading data");
+                    e.printStackTrace();
+                }
+                return msg;
+            }
+
+            public void onPostExecute(String result)
+            {
+                String playlistId = parsePlaylistId(result);
+                Log.i(TAG, playlistId);
+                //String videoId = parseVideoId(result);
+            }
+        }.execute(url);
+    }
+
+    private String parseVideoId(String jsonstring) {
+        Log.v(TAG, "Starting parse....");
+        ArrayAdapter temps = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+        try {
+            JSONObject jsonObj = new JSONObject(jsonstring);
+            JSONArray items = jsonObj.getJSONArray("items");
+            JSONObject o = items.getJSONObject(0);
+            JSONObject snippet = o.getJSONObject("snippet");
+            JSONObject resource = snippet.getJSONObject("resourceId");
+            String videoid = resource.getString("videoId");
+            Log.v(TAG, videoid); // GOT ID!!
+            return videoid;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    private String parsePlaylistId(String jsonstring) {
+        Log.v(TAG, "Starting parse....");
+        ArrayAdapter temps = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+        try {
+            JSONObject jsonObj = new JSONObject(jsonstring);
+            JSONArray items = jsonObj.getJSONArray("items");
+            JSONObject o = items.getJSONObject(0);
+            String videoid = o.getString("id");
+            Log.v(TAG, videoid); // GOT ID!!
+            return videoid;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
