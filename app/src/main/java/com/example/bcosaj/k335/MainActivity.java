@@ -30,6 +30,7 @@ import org.json.JSONObject;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -139,16 +140,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             public void onPostExecute(String result)
             {
-                String videoId = parseVideoId(result);
-                Log.i(TAG, "VIDEO ID: " + videoId);
-                addPost(new YouTubePost("John Mahama", R.drawable.youtube_icon, Uri.parse("https://www.youtube.com/watch?v="+videoId), "1Direction ist schrott", "10.2.1023"));
+                List videoData = parseVideoId(result);
+                Log.i(TAG, "VIDEO Data: " + videoData);
+                addPost(new YouTubePost(videoData.get(3).toString(), R.drawable.youtube_icon, Uri.parse("https://www.youtube.com/watch?v="+videoData.get(2).toString()), videoData.get(1).toString(), videoData.get(0).toString()));
 
             }
         }.execute(url);
     }
 
 
-    private String parseVideoId(String jsonstring) {
+    private List parseVideoId(String jsonstring) {
         Log.v(TAG, "Starting parse....");
         ArrayAdapter temps = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
         try {
@@ -157,12 +158,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             JSONObject o = items.getJSONObject(0);
             JSONObject snippet = o.getJSONObject("snippet");
             JSONObject resource = snippet.getJSONObject("resourceId");
+            String videoDate = snippet.getString("publishedAt");
+            String videoDescription = snippet.getString("description");
+            String videoTitle = snippet.getString("title");
             String videoid = resource.getString("videoId");
-            Log.v(TAG, videoid); // GOT ID!!
-            return videoid;
+            Log.v(TAG, videoDate); // GOT ID!!
+            Log.v(TAG, videoDescription);
+            Log.v(TAG, videoTitle);
+            Log.v(TAG, videoid);
+            List videoData = new ArrayList();
+            videoData.add(videoDate);
+            videoData.add(videoDescription);
+            videoData.add(videoid);
+            videoData.add(videoTitle);
+
+
+            return videoData;
         } catch (JSONException e) {
             e.printStackTrace();
-            return "";
+            List error = new ArrayList();
+            return error;
         }
     }
 
