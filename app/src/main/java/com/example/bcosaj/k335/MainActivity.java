@@ -48,16 +48,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private static String TAG = "TEST";
 
-    private final static String getTokenURL = "https://api.twitter.com/oauth2/token";
-    private static String bearerToken;
-
-    final static String CONSUMER_KEY = "XwDIvlT1kY5E6QY3pEWHSFgR8";
-    final static String CONSUMER_SECRET = "LwGMurUpvDZEx2lwWmJbeXB6DAMWqW3JVZAdDE1W3KWRs47X58";
-    final static String ACCESS_TOKEN = "161282155-fRdWhAJICtxSy6ygXqcfJCyThQMHN6zraFXJOj2c";
-    final static String ACCESS_TOKEN_SECRET = "h8oM4JC7WsUWLV5gh9j1HneCIgBZy33yGsZLEqHgKD86s";
-
-    ArrayList<Post> posts = new ArrayList<Post>();
+    ArrayList<Post> posts = new ArrayList<>();
     PostAdapter newsAdapter;
+
+    ArrayList<String> followingPersons;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,7 +107,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             {
                 String playlistId = parsePlaylistId(result);
                 Log.i(TAG, "PLAYLIST ID: " + playlistId);
-                //String videoId = parseVideoId(result);
                 jsonFetchVideo("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=UUbW18JZRgko_mOGm5er8Yzg&key=AIzaSyDSkGmwHSqOMxvfF0XtlqbjTIUqkDwTEyU");
             }
         }.execute(url);
@@ -238,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Log.i(TAG, "Instagram Data: " + InstaDataList);
                 for (int i = 0; i < InstaDataList.size(); i++) {
                     List InstaData = (ArrayList)InstaDataList.get(i);
-                    addPost(new InstagramPost(InstaData.get(2).toString(), Uri.parse(InstaData.get(0).toString()), InstaData.get(1).toString()));
+                    addPost(new InstagramPost(InstaData.get(2).toString(), Uri.parse(InstaData.get(0).toString()), InstaData.get(1).toString(), "823948"));
                 }
 
             }
@@ -407,10 +400,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             } else{
                 InstagramPost convertedPost = (InstagramPost) post;
                 new DownloadImageTask(convertedPost.CONTENT ,holder.contentYT_I).execute();
+                holder.content_decription.setText(convertedPost.IMAGETITLE);
 
                 holder.contentT_FB.setVisibility(View.GONE);
                 holder.contentYT_I.setVisibility(View.VISIBLE);
-                holder.content_decription.setVisibility(View.GONE);
+                holder.content_decription.setVisibility(View.VISIBLE);
             }
 
             return convertView;
