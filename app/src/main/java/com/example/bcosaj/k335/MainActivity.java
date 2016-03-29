@@ -1,8 +1,10 @@
 package com.example.bcosaj.k335;
 
+import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -21,6 +23,12 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.json.JSONObject;
+
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.MalformedInputException;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
@@ -213,4 +221,54 @@ public class MainActivity extends AppCompatActivity
         }
 
     }
+
+    // Website for Token: apps.twitter.com
+
+    public void getTwitterPosts(String username){
+
+    }
+
+//    private void getBadiTemp(String url){
+//        new AsyncTask<String, String, String>(){
+//            @Override
+//            protected String doInBackground(String[] badi) {
+//                String msg = "";
+//                try {
+//                    URL url = new URL(badi[0]);
+//                    HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+//                    int code = conn.getResponseCode();
+//                    mDialog.dismiss();
+//                    Log.i(TAG, Integer.toString(code));
+//                    msg = IOUtils.toString(conn.getInputStream());
+//                } catch (Exception e){
+//                    Log.v(TAG, e.toString());
+//                }
+//                return msg;
+//            }
+//
+//            public void onPostExecute(String result){
+//                parseJson(result);
+//            }
+//        }.execute(url);
+//    }
+//
+//    public  void parseJson(String jsonstring){
+//        ArrayAdapter temps = new ArrayAdapter<String >(this, android.R.layout.simple_list_item_1);
+//        try{
+//            JSONObject jsonObject = new JSONObject(jsonstring);
+//            JSONObject becken = jsonObject.getJSONObject("becken");
+//            Iterator keys = becken.keys();
+//            while (keys.hasNext()){
+//                String key = (String)keys.next();
+//                JSONObject subObj = becken.getJSONObject(key);
+//                String name = subObj.getString("beckenname");
+//                String temp = subObj.getString("temp");
+//                temps.add(name+": "+temp+" C");
+//            }
+//            ListView badidetails = (ListView)findViewById(R.id.badidetails);
+//            badidetails.setAdapter(temps);
+//        }catch (JSONException e){
+//            Log.v(TAG, e.toString());
+//        }
+//    }
 }
