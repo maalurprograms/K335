@@ -77,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         news.setAdapter(newsAdapter);
 
         YoutubeFetch("https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forUsername=OneDirectionVEVO&key=AIzaSyDSkGmwHSqOMxvfF0XtlqbjTIUqkDwTEyU");
+        jsonFetchInstagram("https://www.instagram.com/pewdiepie/media/");
         new TwitterTask().execute();
     }
 
@@ -207,6 +208,81 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             return "";
         }
     }
+
+    private void jsonFetchInstagram(String url)
+    {
+        new AsyncTask<String, String, String>()
+        {
+            @Override
+            protected String doInBackground(String[] badi) {
+                String msg = "";
+                try
+                {
+                    URL url = new URL(badi[0]);
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    msg = IOUtils.toString(conn.getInputStream());
+                    Log.v(TAG, "Loaded data successfully");
+                }
+                catch(Exception e)
+                {
+                    Log.v(TAG, "Exception while loading data");
+                    e.printStackTrace();
+                }
+                return msg;
+            }
+
+            public void onPostExecute(String result)
+            {
+
+                List InstaDataList = parseInsta(result);
+                Log.i(TAG, "Instagram Data: " + InstaDataList);
+                for (int i = 0; i < InstaDataList.size(); i++) {
+                    List InstaData = (ArrayList)InstaDataList.get(i);
+                    addPost(new InstagramPost(InstaData.get(2).toString(), Uri.parse(InstaData.get(0).toString()), InstaData.get(1).toString()));
+                }
+
+            }
+        }.execute(url);
+    }
+
+    private List parseInsta(String jsonstring) {
+        Log.v(TAG, "Starting parse....");
+        try {
+            List InstaDataList = new ArrayList();
+            JSONObject jsonObj = new JSONObject(jsonstring);
+            Log.v(TAG, jsonObj.toString());
+            JSONArray items = jsonObj.getJSONArray("items");
+            for (int i = 0; i<3; i++) {
+                JSONObject o = items.getJSONObject(i);
+                JSONObject images = o.getJSONObject("images");
+                JSONObject caption = o.getJSONObject("caption");
+                JSONObject from = caption.getJSONObject("from");
+                JSONObject standard_resolution = images.getJSONObject("standard_resolution");
+
+                String text = caption.getString("text");
+                String name = from.getString("full_name");
+                String url = standard_resolution.getString("url");
+
+                Log.v(TAG, "URL: " + url.toString());
+                Log.v(TAG, "TEXT: " + text.toString());
+                Log.v(TAG, "NAME: " + name.toString());
+
+                List InstaData = new ArrayList();
+                InstaData.add(url);
+                InstaData.add(text);
+                InstaData.add(name);
+                InstaDataList.add(InstaData);
+            }
+
+            return InstaDataList;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            List error = new ArrayList();
+            return error;
+        }
+    }
+
+
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
