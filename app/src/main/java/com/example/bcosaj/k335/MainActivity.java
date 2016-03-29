@@ -31,6 +31,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -144,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Log.i(TAG, "VIDEO Data: " + videoDataList);
                 for (int i = 0; i < videoDataList.size(); i++) {
                     List videoData = (ArrayList)videoDataList.get(i);
-                    addPost(new YouTubePost(videoData.get(1).toString(), R.drawable.youtube_icon, Uri.parse("https://www.youtube.com/watch?v=" + videoData.get(3).toString()), videoData.get(4).toString(), videoData.get(0).toString()));
+                    addPost(new YouTubePost(videoData.get(1).toString(), Uri.parse(videoData.get(2).toString()), Uri.parse("https://www.youtube.com/watch?v=" + videoData.get(3).toString()), videoData.get(4).toString(), videoData.get(0).toString()));
                 }
 
             }
