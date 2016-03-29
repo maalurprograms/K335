@@ -21,7 +21,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
@@ -241,6 +240,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             ImageView contentYT_I;
             TextView contentT_FB;
             TextView content_decription;
+            TextView date;
         }
 
         @Override
@@ -261,7 +261,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 holder.creator = (TextView) convertView.findViewById(R.id.post_creator);
                 holder.contentYT_I = (ImageView) convertView.findViewById(R.id.in_yt_post_content);
                 holder.contentT_FB = (TextView) convertView.findViewById(R.id.tw_fb_post_content);
-                holder.content_decription = (TextView) convertView.findViewById(R.id.yt_content_description);
+                holder.content_decription = (TextView) convertView.findViewById(R.id.yt_video_title);
+                holder.date = (TextView) convertView.findViewById(R.id.date);
 
 
                 convertView.setTag(holder);
@@ -273,6 +274,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             holder.srclogo.setImageResource(post.SOURCE);
             holder.creator.setText(post.CREATOR);
+            holder.date.setText(post.DATE);
 
             if (post instanceof TwitterPost){
                 TwitterPost convertedPost = (TwitterPost)post;
@@ -352,16 +354,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if(statuses == null) {
                 Log.v("twitter", "No statuses to show");
             }
-            twitter4j.Status firstStatus = statuses.get(0);
-            String content = firstStatus.getText();
-
-//            ArrayList<twitter4j.Status> twitterStatusses = new ArrayList<twitter4j.Status>(statuses);
-//            TweetsAdapter tweetsAdapter = new TweetsAdapter(MainActivity.this, twitterStatusses);
-//            setContentView(R.layout.activity_main);
-//            ListView lv=(ListView)findViewById(R.id.listView);
-//            lv.setAdapter(tweetsAdapter);+
-
-            addPost(new TwitterPost(firstStatus.getUser().getName(), firstStatus.getText(), firstStatus.getCreatedAt().toString()));
+            for (twitter4j.Status status:statuses) {
+                addPost(new TwitterPost(status.getUser().getName(), status.getText(), status.getCreatedAt().toString()));
+            }
         }
 
     }
