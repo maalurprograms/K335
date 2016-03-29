@@ -136,9 +136,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             public void onPostExecute(String result)
             {
-                List videoData = parseVideoId(result);
-                Log.i(TAG, "VIDEO Data: " + videoData);
-                addPost(new YouTubePost(videoData.get(3).toString(), R.drawable.youtube_icon, Uri.parse("https://www.youtube.com/watch?v="+videoData.get(2).toString()), videoData.get(1).toString(), videoData.get(0).toString()));
+                List videoDataList = parseVideoId(result);
+                Log.i(TAG, "VIDEO Data: " + videoDataList);
+                for (int i = 0; i < videoDataList.size(); i++) {
+                    List videoData = (ArrayList)videoDataList.get(i);
+                    addPost(new YouTubePost(videoData.get(1).toString(), R.drawable.youtube_icon, Uri.parse("https://www.youtube.com/watch?v=" + videoData.get(3).toString()), videoData.get(4).toString(), videoData.get(0).toString()));
+                }
 
             }
         }.execute(url);
@@ -149,27 +152,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Log.v(TAG, "Starting parse....");
         ArrayAdapter temps = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
         try {
+            List videoDataList = new ArrayList();
             JSONObject jsonObj = new JSONObject(jsonstring);
+            Log.v(TAG, jsonObj.toString());
             JSONArray items = jsonObj.getJSONArray("items");
-            JSONObject o = items.getJSONObject(0);
-            JSONObject snippet = o.getJSONObject("snippet");
-            JSONObject resource = snippet.getJSONObject("resourceId");
-            String videoDate = snippet.getString("publishedAt");
-            String videoDescription = snippet.getString("description");
-            String videoTitle = snippet.getString("title");
-            String videoid = resource.getString("videoId");
-            Log.v(TAG, videoDate); // GOT ID!!
-            Log.v(TAG, videoDescription);
-            Log.v(TAG, videoTitle);
-            Log.v(TAG, videoid);
-            List videoData = new ArrayList();
-            videoData.add(videoDate);
-            videoData.add(videoDescription);
-            videoData.add(videoid);
-            videoData.add(videoTitle);
+            for (int i = 0; i<3; i++){
+                JSONObject o = items.getJSONObject(i);
+                JSONObject snippet = o.getJSONObject("snippet");
+                JSONObject resource = snippet.getJSONObject("resourceId");
+                JSONObject thumbnail = snippet.getJSONObject("thumbnails");
+                JSONObject thumbnail_s = thumbnail.getJSONObject("standard");
+                String videoDate = snippet.getString("publishedAt");
+                String videoTitle = snippet.getString("title");
+                String channelTitle = snippet.getString("channelTitle");
+                String videoThumb = thumbnail_s.getString("url");
+                String videoid = resource.getString("videoId");
+
+                List videoData = new ArrayList();
+                videoData.add(videoDate);
+                videoData.add(channelTitle);
+                videoData.add(videoThumb);
+                videoData.add(videoid);
+                videoData.add(videoTitle);
+                videoDataList.add(videoData);
+            }
 
 
-            return videoData;
+            return videoDataList;
         } catch (JSONException e) {
             e.printStackTrace();
             List error = new ArrayList();
