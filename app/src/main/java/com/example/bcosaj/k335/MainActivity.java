@@ -406,7 +406,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 });
             } else{
                 InstagramPost convertedPost = (InstagramPost) post;
-                holder.contentYT_I.setImageResource(convertedPost.CONTENT);
+                new DownloadImageTask(convertedPost.CONTENT ,holder.contentYT_I).execute();
 
                 holder.contentT_FB.setVisibility(View.GONE);
                 holder.contentYT_I.setVisibility(View.VISIBLE);

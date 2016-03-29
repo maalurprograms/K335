@@ -7,9 +7,9 @@ import android.net.Uri;
  */
 public class InstagramPost extends Post {
 
-    public final int CONTENT;
+    public final Uri CONTENT;
 
-    public InstagramPost(String CREATOR, int CONTENT, String DATE) {
+    public InstagramPost(String CREATOR, Uri CONTENT, String DATE) {
         super(CREATOR, DATE);
         this.CONTENT = CONTENT;
         this.SOURCE = R.drawable.instagram_icon;
