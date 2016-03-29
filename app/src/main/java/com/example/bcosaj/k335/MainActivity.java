@@ -66,17 +66,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-//        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-//        navigationView.setNavigationItemSelectedListener(this);
-//        DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-//        ListView listView = (ListView) findViewById(R.id.nav_bar_list);
-
-        posts = new ArrayList<Post>();
-        posts.add(new TwitterPost("Jonas Cosandey", "Hello World this should be a long text but i dont know what to write so i just type some things so i can test.", "12.2.1234"));
-        posts.add(new FacebookPost("Jonas Cosandey", "Facebook Test", "Test", 0));
-        posts.add(new YouTubePost("Jonas Cosandey", R.drawable.youtube_icon, Uri.parse("https://www.youtube.com/watch?v=Ld4H349oyTA&ebc=ANyPxKp2b6BBFnv5GIvRdg0nvC6OJ1yCQnAhh-aZG7vl3wPjG3xDiS9edL4rpjpkCeqzSL1MgpzxIApyCZ9kRHXK2IHZthnhpg"), "A Video Example", "12.3.123"));
-        posts.add(new InstagramPost("Jonas Cosandey", R.drawable.instagram_icon, "21.3.43"));
-
         ListView news = (ListView)findViewById(R.id.main_news_list);
         newsAdapter = new PostAdapter(this, R.layout.item_list_layout, posts);
         news.setAdapter(newsAdapter);
