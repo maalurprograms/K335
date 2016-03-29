@@ -24,6 +24,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
@@ -313,8 +314,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 holder.content_decription.setVisibility(View.GONE);
             }else if (post instanceof YouTubePost) {
                 final YouTubePost convertedPost = (YouTubePost) post;
-                Bitmap image = BitmapFactory.decodeFile(convertedPost.CONTENT.getPath());
-                holder.contentYT_I.setImageBitmap(image);
+
+                try {
+                    URL newurl = new URL("https://i.ytimg.com/vi/yjmp8CoZBIo/sddefault.jpg");
+                    Bitmap image = BitmapFactory.decodeStream(newurl.openConnection().getInputStream());
+                    holder.contentYT_I.setImageBitmap(image);
+                }
+                catch(Exception e) {
+                    Log.d(TAG, e.toString());
+                }
+
+
+
+                //Bitmap image = BitmapFactory.decodeFile(convertedPost.CONTENT.getPath());
+                //holder.contentYT_I.setImageBitmap(image);
                 holder.content_decription.setText(convertedPost.VIDEOTITLE);
 
                 holder.contentT_FB.setVisibility(View.GONE);
