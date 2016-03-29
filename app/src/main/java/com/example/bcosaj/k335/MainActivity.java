@@ -3,6 +3,7 @@ package com.example.bcosaj.k335;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -21,10 +22,18 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+
+    private static String TAG = "TEST";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +95,73 @@ public class MainActivity extends AppCompatActivity
 //        // Set the list's click listener
 //        listView.setOnItemClickListener(new DrawerItemClickListener());
 
+        jsonFetch("https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forUsername=OneDirectionVEVO&key=AIzaSyDSkGmwHSqOMxvfF0XtlqbjTIUqkDwTEyU");
+
+    }
+
+    private void jsonFetch(String url)
+    {
+        new AsyncTask<String, String, String>()
+        {
+            @Override
+            protected String doInBackground(String[] badi) {
+                String msg = "";
+                try
+                {
+                    URL url = new URL(badi[0]);
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    msg = IOUtils.toString(conn.getInputStream());
+                    Log.v(TAG, "Loaded data successfully");
+                }
+                catch(Exception e)
+                {
+                    Log.v(TAG, "Exception while loading data");
+                    e.printStackTrace();
+                }
+                return msg;
+            }
+
+            public void onPostExecute(String result)
+            {
+                String playlistId = parsePlaylistId(result);
+                Log.i(TAG, playlistId);
+                //String videoId = parseVideoId(result);
+            }
+        }.execute(url);
+    }
+
+    private String parseVideoId(String jsonstring) {
+        Log.v(TAG, "Starting parse....");
+        ArrayAdapter temps = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+        try {
+            JSONObject jsonObj = new JSONObject(jsonstring);
+            JSONArray items = jsonObj.getJSONArray("items");
+            JSONObject o = items.getJSONObject(0);
+            JSONObject snippet = o.getJSONObject("snippet");
+            JSONObject resource = snippet.getJSONObject("resourceId");
+            String videoid = resource.getString("videoId");
+            Log.v(TAG, videoid); // GOT ID!!
+            return videoid;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    private String parsePlaylistId(String jsonstring) {
+        Log.v(TAG, "Starting parse....");
+        ArrayAdapter temps = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+        try {
+            JSONObject jsonObj = new JSONObject(jsonstring);
+            JSONArray items = jsonObj.getJSONArray("items");
+            JSONObject o = items.getJSONObject(0);
+            String videoid = o.getString("id");
+            Log.v(TAG, videoid); // GOT ID!!
+            return videoid;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 
     @Override
