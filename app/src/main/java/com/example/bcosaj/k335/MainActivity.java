@@ -315,21 +315,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }else if (post instanceof YouTubePost) {
                 final YouTubePost convertedPost = (YouTubePost) post;
 
-                try {
-                    URL newurl = new URL("https://i.ytimg.com/vi/yjmp8CoZBIo/sddefault.jpg");
-                    Bitmap image = BitmapFactory.decodeStream(newurl.openConnection().getInputStream());
-                    holder.contentYT_I.setImageBitmap(image);
-                }
-                catch(Exception e) {
-                    Log.d(TAG, e.toString());
-                }
+                new DownloadImageTask(convertedPost.CONTENT ,holder.contentYT_I).execute();
 
-
-
-                //Bitmap image = BitmapFactory.decodeFile(convertedPost.CONTENT.getPath());
-                //holder.contentYT_I.setImageBitmap(image);
                 holder.content_decription.setText(convertedPost.VIDEOTITLE);
-
                 holder.contentT_FB.setVisibility(View.GONE);
                 holder.contentYT_I.setVisibility(View.VISIBLE);
                 holder.content_decription.setVisibility(View.VISIBLE);
@@ -355,6 +343,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+
+        ImageView yt_thumbnail_view;
+        Uri url;
+
+        public DownloadImageTask(Uri url, ImageView yt_thumbnail_view) {
+            this.url = url;
+            this.yt_thumbnail_view = yt_thumbnail_view;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            Bitmap image = null;
+            try {
+                InputStream in = new java.net.URL(url.toString()).openStream();
+                image = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return image;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            yt_thumbnail_view.setImageBitmap(result);
+        }
+    }
+
     private class TwitterTask extends AsyncTask<String, Integer, List<Status>> {
 
         @Override
@@ -373,7 +388,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             List<twitter4j.Status> statuses = null;
             try {
                 String user;
-                user = "digitec_de";
+                user = "LinusTechTips";
                 statuses = twitter.getUserTimeline(user);
                 Log.i("Status Count", statuses.size() + " Feeds");
                 return statuses;
@@ -388,8 +403,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if(statuses == null) {
                 Log.v("twitter", "No statuses to show");
             }
+            int count = 1;
             for (twitter4j.Status status:statuses) {
+                if (count == 5){
+                    break;
+                }
                 addPost(new TwitterPost(status.getUser().getName(), status.getText(), status.getCreatedAt().toString()));
+                count++;
             }
         }
 
