@@ -21,6 +21,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
@@ -31,6 +32,12 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import twitter4j.Status;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
+import twitter4j.conf.ConfigurationBuilder;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -67,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         posts = new ArrayList<Post>();
         posts.add(new TwitterPost("Jonas Cosandey", "Hello World this should be a long text but i dont know what to write so i just type some things so i can test.", "12.2.1234"));
-        posts.add(new FacebookPost("Jonas Cosandey", "Facebook Test", "Test"));
+        posts.add(new FacebookPost("Jonas Cosandey", "Facebook Test", "Test", 0));
         posts.add(new YouTubePost("Jonas Cosandey", R.drawable.youtube_icon, Uri.parse("https://www.youtube.com/watch?v=Ld4H349oyTA&ebc=ANyPxKp2b6BBFnv5GIvRdg0nvC6OJ1yCQnAhh-aZG7vl3wPjG3xDiS9edL4rpjpkCeqzSL1MgpzxIApyCZ9kRHXK2IHZthnhpg"), "A Video Example", "12.3.123"));
         posts.add(new InstagramPost("Jonas Cosandey", R.drawable.instagram_icon, "21.3.43"));
 
@@ -76,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         news.setAdapter(newsAdapter);
 
         YoutubeFetch("https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forUsername=OneDirectionVEVO&key=AIzaSyDSkGmwHSqOMxvfF0XtlqbjTIUqkDwTEyU");
+        new TwitterTask().execute();
     }
 
     public void addPost(Post post){
@@ -326,6 +334,53 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             return convertView;
 
+        }
+
+    }
+
+    private class TwitterTask extends AsyncTask<String, Integer, List<Status>> {
+
+        @Override
+        protected List<twitter4j.Status> doInBackground(String... urls) {
+            ConfigurationBuilder cb = new ConfigurationBuilder();
+            cb.setDebugEnabled(true)
+                    .setOAuthConsumerKey(AccessTokens.TWITTER_CONSUMER_KEY)
+                    .setOAuthConsumerSecret(
+                            AccessTokens.TWITTER_CONSUMER_SECRET)
+                    .setOAuthAccessToken(
+                            AccessTokens.TWITTER_ACCESS_TOKEN)
+                    .setOAuthAccessTokenSecret(
+                            AccessTokens.TWITTER_ACCESS_TOKEN_SECRET);
+            TwitterFactory tf = new TwitterFactory(cb.build());
+            Twitter twitter = tf.getInstance();
+            List<twitter4j.Status> statuses = null;
+            try {
+                String user;
+                user = "digitec_de";
+                statuses = twitter.getUserTimeline(user);
+                Log.i("Status Count", statuses.size() + " Feeds");
+                return statuses;
+            } catch (TwitterException te) {
+                te.printStackTrace();
+            }
+            return statuses;
+        }
+
+        @Override
+        protected void onPostExecute(List<twitter4j.Status> statuses) {
+            if(statuses == null) {
+                Log.v("twitter", "No statuses to show");
+            }
+            twitter4j.Status firstStatus = statuses.get(0);
+            String content = firstStatus.getText();
+
+//            ArrayList<twitter4j.Status> twitterStatusses = new ArrayList<twitter4j.Status>(statuses);
+//            TweetsAdapter tweetsAdapter = new TweetsAdapter(MainActivity.this, twitterStatusses);
+//            setContentView(R.layout.activity_main);
+//            ListView lv=(ListView)findViewById(R.id.listView);
+//            lv.setAdapter(tweetsAdapter);+
+
+            addPost(new TwitterPost(firstStatus.getUser().getName(), firstStatus.getText(), firstStatus.getCreatedAt().toString()));
         }
 
     }
