@@ -5,14 +5,13 @@ import android.widget.ImageView;
 /**
  * Created by bcosaj on 23.03.2016.
  */
-public class Post {
+public abstract class Post {
     public final String CREATOR;
-    public final int SOURCE;
     public final String DATE;
+    public int SOURCE;
 
-    public Post(String CREATOR, int SOURCE, String DATE) {
+    public Post(String CREATOR, String DATE) {
         this.CREATOR = CREATOR;
-        this.SOURCE = SOURCE;
         this.DATE = DATE;
     }
 }

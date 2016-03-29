@@ -14,10 +14,11 @@ public class YouTubePost extends Post {
     public final Uri LINK;
     public final String DESCRIPTION;
 
-    public YouTubePost(String CREATOR, int CONTENT, Uri LINK, String DESCRIPTION, int SOURCE, String DATE) {
-        super(CREATOR, SOURCE, DATE);
+    public YouTubePost(String CREATOR, int CONTENT, Uri LINK, String DESCRIPTION, String DATE) {
+        super(CREATOR, DATE);
         this.CONTENT = CONTENT;
         this.LINK = LINK;
         this.DESCRIPTION = DESCRIPTION;
+        this.SOURCE = R.drawable.youtube_icon;
     }
 }
