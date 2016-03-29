@@ -282,8 +282,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 holder.contentT_FB = (TextView) convertView.findViewById(R.id.tw_fb_post_content);
                 holder.content_decription = (TextView) convertView.findViewById(R.id.yt_video_title);
                 holder.date = (TextView) convertView.findViewById(R.id.date);
-
-
                 convertView.setTag(holder);
             }
             else {
