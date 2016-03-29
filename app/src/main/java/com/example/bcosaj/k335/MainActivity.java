@@ -54,6 +54,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //        ListView listView = (ListView) findViewById(R.id.nav_bar_list);
 
         ArrayList<Post> posts = new ArrayList<Post>();
+
+
         posts.add(new TwitterFacebookPost("Jonas Cosandey", "Hello World this should be a long text but i dont know what to write so i just type some things so i can test.", R.drawable.twitter_icon, "12.2.1234"));
         posts.add(new TwitterFacebookPost("Jonas Cosandey", "Facebook Test", R.drawable.facebook_icon, "2.2.1234"));
         posts.add(new YouTubePost("Jonas Cosandey", R.drawable.youtube_icon, Uri.parse("https://www.youtube.com/watch?v=Ld4H349oyTA&ebc=ANyPxKp2b6BBFnv5GIvRdg0nvC6OJ1yCQnAhh-aZG7vl3wPjG3xDiS9edL4rpjpkCeqzSL1MgpzxIApyCZ9kRHXK2IHZthnhpg"), "A Video Example", R.drawable.youtube_icon, "12.3.123"));
@@ -95,11 +97,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //        // Set the list's click listener
 //        listView.setOnItemClickListener(new DrawerItemClickListener());
 
-        jsonFetch("https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forUsername=OneDirectionVEVO&key=AIzaSyDSkGmwHSqOMxvfF0XtlqbjTIUqkDwTEyU");
+        YoutubeFetch("https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forUsername=OneDirectionVEVO&key=AIzaSyDSkGmwHSqOMxvfF0XtlqbjTIUqkDwTEyU");
 
     }
 
-    private void jsonFetch(String url)
+    private void YoutubeFetch(String url)
     {
         new AsyncTask<String, String, String>()
         {
@@ -124,11 +126,43 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onPostExecute(String result)
             {
                 String playlistId = parsePlaylistId(result);
-                Log.i(TAG, playlistId);
+                Log.i(TAG, "PLAYLIST ID: " + playlistId);
                 //String videoId = parseVideoId(result);
+                jsonFetchVideo("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=UUbW18JZRgko_mOGm5er8Yzg&key=AIzaSyDSkGmwHSqOMxvfF0XtlqbjTIUqkDwTEyU");
             }
         }.execute(url);
     }
+
+    private void jsonFetchVideo(String url)
+    {
+        new AsyncTask<String, String, String>()
+        {
+            @Override
+            protected String doInBackground(String[] badi) {
+                String msg = "";
+                try
+                {
+                    URL url = new URL(badi[0]);
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    msg = IOUtils.toString(conn.getInputStream());
+                    Log.v(TAG, "Loaded data successfully");
+                }
+                catch(Exception e)
+                {
+                    Log.v(TAG, "Exception while loading data");
+                    e.printStackTrace();
+                }
+                return msg;
+            }
+
+            public void onPostExecute(String result)
+            {
+                String videoId = parseVideoId(result);
+                Log.i(TAG, "VIDEO ID: " + videoId);
+            }
+        }.execute(url);
+    }
+
 
     private String parseVideoId(String jsonstring) {
         Log.v(TAG, "Starting parse....");
