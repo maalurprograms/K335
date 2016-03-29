@@ -2,6 +2,9 @@ package com.example.bcosaj.k335;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -27,6 +30,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -299,8 +303,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 holder.content_decription.setVisibility(View.GONE);
             }else if (post instanceof YouTubePost) {
                 final YouTubePost convertedPost = (YouTubePost) post;
-                holder.contentYT_I.setImageResource(convertedPost.CONTENT);
-                holder.content_decription.setText(convertedPost.DESCRIPTION);
+                Bitmap image = BitmapFactory.decodeFile(convertedPost.CONTENT.getPath());
+                holder.contentYT_I.setImageBitmap(image);
+                holder.content_decription.setText(convertedPost.VIDEOTITLE);
 
                 holder.contentT_FB.setVisibility(View.GONE);
                 holder.contentYT_I.setVisibility(View.VISIBLE);

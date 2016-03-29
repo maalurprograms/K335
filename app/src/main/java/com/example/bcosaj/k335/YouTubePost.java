@@ -1,8 +1,5 @@
 package com.example.bcosaj.k335;
 
-import android.widget.ImageView;
-import android.widget.VideoView;
-
 import android.net.Uri;
 
 /**
@@ -10,15 +7,15 @@ import android.net.Uri;
  */
 public class YouTubePost extends Post {
 
-    public final int CONTENT;
+    public final Uri CONTENT;
     public final Uri LINK;
-    public final String DESCRIPTION;
+    public final String VIDEOTITLE;
 
-    public YouTubePost(String CREATOR, int CONTENT, Uri LINK, String DESCRIPTION, String DATE) {
+    public YouTubePost(String CREATOR, Uri CONTENT, Uri LINK, String VIDEOTITLE, String DATE) {
         super(CREATOR, DATE);
         this.CONTENT = CONTENT;
         this.LINK = LINK;
-        this.DESCRIPTION = DESCRIPTION;
+        this.VIDEOTITLE = VIDEOTITLE;
         this.SOURCE = R.drawable.youtube_icon;
     }
 }
