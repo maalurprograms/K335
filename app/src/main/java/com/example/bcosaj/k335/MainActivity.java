@@ -30,10 +30,28 @@ import org.json.JSONObject;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
+
+import twitter4j.Status;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
+import twitter4j.conf.ConfigurationBuilder;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private static String TAG = "TEST";
+
+    private final static String getTokenURL = "https://api.twitter.com/oauth2/token";
+    private static String bearerToken;
+
+    final static String CONSUMER_KEY = "XwDIvlT1kY5E6QY3pEWHSFgR8";
+    final static String CONSUMER_SECRET = "LwGMurUpvDZEx2lwWmJbeXB6DAMWqW3JVZAdDE1W3KWRs47X58";
+    final static String ACCESS_TOKEN = "161282155-fRdWhAJICtxSy6ygXqcfJCyThQMHN6zraFXJOj2c";
+    final static String ACCESS_TOKEN_SECRET = "h8oM4JC7WsUWLV5gh9j1HneCIgBZy33yGsZLEqHgKD86s";
+
+    ArrayList<Post> posts = new ArrayList<Post>();
+    PostAdapter newsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,52 +71,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //        DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 //        ListView listView = (ListView) findViewById(R.id.nav_bar_list);
 
-        ArrayList<Post> posts = new ArrayList<Post>();
-
-
+        posts = new ArrayList<Post>();
         posts.add(new TwitterFacebookPost("Jonas Cosandey", "Hello World this should be a long text but i dont know what to write so i just type some things so i can test.", R.drawable.twitter_icon, "12.2.1234"));
         posts.add(new TwitterFacebookPost("Jonas Cosandey", "Facebook Test", R.drawable.facebook_icon, "2.2.1234"));
         posts.add(new YouTubePost("Jonas Cosandey", R.drawable.youtube_icon, Uri.parse("https://www.youtube.com/watch?v=Ld4H349oyTA&ebc=ANyPxKp2b6BBFnv5GIvRdg0nvC6OJ1yCQnAhh-aZG7vl3wPjG3xDiS9edL4rpjpkCeqzSL1MgpzxIApyCZ9kRHXK2IHZthnhpg"), "A Video Example", R.drawable.youtube_icon, "12.3.123"));
         posts.add(new InstagramPost("Jonas Cosandey", R.drawable.instagram_icon, R.drawable.instagram_icon, "21.3.43"));
 
         ListView news = (ListView)findViewById(R.id.main_news_list);
-        PostAdapter newsAdapter = new PostAdapter(this, R.layout.item_list_layout, posts);
+        newsAdapter = new PostAdapter(this, R.layout.item_list_layout, posts);
         news.setAdapter(newsAdapter);
 
-//        AdapterView.OnItemClickListener mListClickedHandler = new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                Intent intent = new Intent(getApplicationContext(), BadiDetailsActivity.class);
-//                String selected = parent.getItemAtPosition(position).toString();
-////                Toast toast = Toast.makeText(getApplicationContext(), selected, Toast.LENGTH_SHORT);
-////                toast.show();
-//                switch (selected){
-//                    case AARBERG:
-//                        intent.putExtra("badi", "71");
-//                        break;
-//                    case ADELBODEN:
-//                        intent.putExtra("badi", "27");
-//                        break;
-//                    case BERN:
-//                        intent.putExtra("badi", "6");
-//                        break;
-//                    default:
-//                        intent.putExtra("badi", "55");
-//                        break;
-//                }
-//                intent.putExtra("name", selected);
-//                startActivity(intent);
-//            }
-//        };
-//        badis.setOnItemClickListener(mListClickedHandler);
-//
-//        // Set the adapter for the list view
-//        listView.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, new String[]));
-//        // Set the list's click listener
-//        listView.setOnItemClickListener(new DrawerItemClickListener());
-
         YoutubeFetch("https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forUsername=OneDirectionVEVO&key=AIzaSyDSkGmwHSqOMxvfF0XtlqbjTIUqkDwTEyU");
+    }
 
+    public void addPost(Post post){
+        posts.add(post);
+        newsAdapter.postList = posts;
+        newsAdapter.notifyDataSetChanged();
     }
 
     private void YoutubeFetch(String url)
@@ -159,6 +148,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             {
                 String videoId = parseVideoId(result);
                 Log.i(TAG, "VIDEO ID: " + videoId);
+                addPost(new YouTubePost());
+
             }
         }.execute(url);
     }
@@ -292,7 +283,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 holder.contentT_FB.setVisibility(View.VISIBLE);
                 holder.contentYT_I.setVisibility(View.GONE);
-                holder.content_decription.setVisibility(View.VISIBLE);
+                holder.content_decription.setVisibility(View.GONE);
 
             } else if (post instanceof YouTubePost) {
                 final YouTubePost convertedPost = (YouTubePost) post;
