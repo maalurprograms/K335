@@ -14,6 +14,7 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -63,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private String TWITTER_ACCOUNT;
     private String FACEBOOK_ACCOUNT;
     private String INSTAGRAM_ACCOUNT;
+    SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,23 +76,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Define account usernames
         PREFS = PreferenceManager.getDefaultSharedPreferences(this);
-        PERSON = PREFS.getString("PERSON", "");
-        if (PERSON.equals("")){
-            PERSON = "Linus Tech Tips";
-            YOUTUBE_ACCOUNT = "LinusTechTips";
-            TWITTER_ACCOUNT = "LinusTech";
-            FACEBOOK_ACCOUNT = "LinusTech";
-            INSTAGRAM_ACCOUNT = "linustech";
-            PREFS.edit().putString("PERSON", PERSON).commit();
-            PREFS.edit().putString(PERSON, YOUTUBE_ACCOUNT+":"+TWITTER_ACCOUNT+":"+FACEBOOK_ACCOUNT+":"+INSTAGRAM_ACCOUNT).commit();
-        }else {
-            String lol = PREFS.getString(PERSON, "");
-            String[] data = PREFS.getString(PERSON, "").split(":");
-            YOUTUBE_ACCOUNT = data[0];
-            TWITTER_ACCOUNT = data[1];
-            FACEBOOK_ACCOUNT = data[2];
-            INSTAGRAM_ACCOUNT = data[3];
-        }
+        setUserData();
 
         ListView news = (ListView)findViewById(R.id.main_news_list);
         newsAdapter = new PostAdapter(this, R.layout.item_list_layout, posts);
@@ -101,7 +87,40 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         jsonFetchInstagram(INSTAGRAM_ACCOUNT);
         parseTwitter(TWITTER_ACCOUNT);
         jsonFetchFacebook(FACEBOOK_ACCOUNT);
+
+        swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                posts = new ArrayList<Post>();
+                setUserData();
+                YoutubeFetch(YOUTUBE_ACCOUNT);
+                jsonFetchInstagram(INSTAGRAM_ACCOUNT);
+                parseTwitter(TWITTER_ACCOUNT);
+                jsonFetchFacebook(FACEBOOK_ACCOUNT);
+            }
+        });
     }
+
+    private void setUserData(){
+        PERSON = PREFS.getString("PERSON", "");
+        if (PERSON.equals("")){
+            PERSON = "Linus Tech Tips";
+            YOUTUBE_ACCOUNT = "LinusTechTips";
+            TWITTER_ACCOUNT = "LinusTech";
+            FACEBOOK_ACCOUNT = "LinusTech";
+            INSTAGRAM_ACCOUNT = "linustech";
+            PREFS.edit().putString("PERSON", PERSON).commit();
+            PREFS.edit().putString(PERSON, YOUTUBE_ACCOUNT+":"+TWITTER_ACCOUNT+":"+FACEBOOK_ACCOUNT+":"+INSTAGRAM_ACCOUNT).commit();
+        }else {
+            String[] data = PREFS.getString(PERSON, "").split(":");
+            YOUTUBE_ACCOUNT = data[0];
+            TWITTER_ACCOUNT = data[1];
+            FACEBOOK_ACCOUNT = data[2];
+            INSTAGRAM_ACCOUNT = data[3];
+        }
+    }
+
     /**
      * Add a post to the post array
      * @param post - New post content
@@ -181,7 +200,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Log.i(TAG, "VIDEO Data: " + videoDataList);
                 for (int i = 0; i < videoDataList.size(); i++) {
                     List videoData = (ArrayList)videoDataList.get(i);
-                    addPost(new YouTubePost(videoData.get(1).toString(), Uri.parse(videoData.get(2).toString()), Uri.parse("https://www.youtube.com/watch?v=" + videoData.get(3).toString()), videoData.get(4).toString(), videoData.get(0).toString()));
+                    addPost(new YouTubePost(Uri.parse(videoData.get(1).toString()), Uri.parse("https://www.youtube.com/watch?v=" + videoData.get(2).toString()), videoData.get(3).toString(), videoData.get(0).toString()));
                 }
 
             }
@@ -208,13 +227,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 JSONObject thumbnail_s = thumbnail.getJSONObject("standard");
                 String videoDate = snippet.getString("publishedAt");
                 String videoTitle = snippet.getString("title");
-                String channelTitle = snippet.getString("channelTitle");
                 String videoThumb = thumbnail_s.getString("url");
                 String videoid = resource.getString("videoId");
 
                 List videoData = new ArrayList();
                 videoData.add(videoDate);
-                videoData.add(channelTitle);
                 videoData.add(videoThumb);
                 videoData.add(videoid);
                 videoData.add(videoTitle);
@@ -284,7 +301,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Log.i(TAG, "Instagram Data: " + InstaDataList);
                 for (int i = 0; i < InstaDataList.size(); i++) {
                     List InstaData = (ArrayList)InstaDataList.get(i);
-                    addPost(new InstagramPost(InstaData.get(2).toString(), Uri.parse(InstaData.get(0).toString()), InstaData.get(1).toString(), InstaData.get(3).toString()));
+                    addPost(new InstagramPost(Uri.parse(InstaData.get(0).toString()), InstaData.get(1).toString(), InstaData.get(3).toString()));
                 }
 
             }
@@ -373,6 +390,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     List FcbkData = (ArrayList)FcbkDataList.get(i);
                     addPost(new FacebookPost(FcbkData.get(4).toString(),FcbkData.get(2).toString(), FcbkData.get(0).toString(), Uri.parse(FcbkData.get(3).toString()), Uri.parse(FcbkData.get(1).toString())));
                 }
+                swipeRefreshLayout.setRefreshing(false);
             }
         }.execute();
     }
@@ -534,7 +552,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
             holder.srclogo.setImageResource(post.SOURCE);
-            holder.creator.setText(post.CREATOR);
+            holder.creator.setText(PERSON);
             holder.date.setText(post.DATE);
             holder.contentYT_I.setOnClickListener(null);
 
@@ -625,50 +643,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    private class TwitterTask extends AsyncTask<String, Integer, List<Status>> {
-
-        @Override
-        protected List<twitter4j.Status> doInBackground(String... urls) {
-            ConfigurationBuilder cb = new ConfigurationBuilder();
-            cb.setDebugEnabled(true)
-                    .setOAuthConsumerKey(AccessTokens.TWITTER_CONSUMER_KEY)
-                    .setOAuthConsumerSecret(
-                            AccessTokens.TWITTER_CONSUMER_SECRET)
-                    .setOAuthAccessToken(
-                            AccessTokens.TWITTER_ACCESS_TOKEN)
-                    .setOAuthAccessTokenSecret(
-                            AccessTokens.TWITTER_ACCESS_TOKEN_SECRET);
-            TwitterFactory tf = new TwitterFactory(cb.build());
-            Twitter twitter = tf.getInstance();
-            List<twitter4j.Status> statuses = null;
-            try {
-                String user;
-                user = "LinusTech";
-                statuses = twitter.getUserTimeline(user);
-                Log.i("Status Count", statuses.size() + " Feeds");
-                return statuses;
-            } catch (TwitterException te) {
-                te.printStackTrace();
-            }
-            return statuses;
-        }
-
-        @Override
-        protected void onPostExecute(List<twitter4j.Status> statuses) {
-            if(statuses == null) {
-                Log.v("twitter", "No statuses to show");
-            }
-            int count = 1;
-            for (twitter4j.Status status:statuses) {
-                if (count == 5){
-                    break;
-                }
-                addPost(new TwitterPost(status.getUser().getName(), status.getText(), status.getCreatedAt().toString()));
-                count++;
-            }
-        }
-    }
-
     private void parseTwitter(final String username){
         new AsyncTask<String, Integer, List<Status>>(){
             @Override
@@ -705,7 +679,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     if (count == 5){
                         break;
                     }
-                    addPost(new TwitterPost(status.getUser().getName(), status.getText(), status.getCreatedAt().toString()));
+                    addPost(new TwitterPost(status.getText(), status.getCreatedAt().toString()));
                     count++;
                 }
             }

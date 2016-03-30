@@ -10,8 +10,8 @@ public class InstagramPost extends Post {
     public final Uri CONTENT;
     public final String IMAGETITLE;
 
-    public InstagramPost(String CREATOR, Uri CONTENT, String IMAGETITLE, String DATE) {
-        super(CREATOR, DATE);
+    public InstagramPost(Uri CONTENT, String IMAGETITLE, String DATE) {
+        super(DATE);
         this.CONTENT = CONTENT;
         this.SOURCE = R.drawable.instagram_icon;
         this.IMAGETITLE = IMAGETITLE;

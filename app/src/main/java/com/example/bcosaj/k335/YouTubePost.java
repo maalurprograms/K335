@@ -11,8 +11,8 @@ public class YouTubePost extends Post {
     public final Uri LINK;
     public final String VIDEOTITLE;
 
-    public YouTubePost(String CREATOR, Uri CONTENT, Uri LINK, String VIDEOTITLE, String DATE) {
-        super(CREATOR, DATE);
+    public YouTubePost(Uri CONTENT, Uri LINK, String VIDEOTITLE, String DATE) {
+        super(DATE);
         this.CONTENT = CONTENT;
         this.LINK = LINK;
         this.VIDEOTITLE = VIDEOTITLE;

@@ -12,7 +12,7 @@ public class FacebookPost extends Post{
     public final String CONTENT;
 
     public FacebookPost(String CREATOR, String DATE, String CONTENT, Uri IMAGE, Uri LINK) {
-        super(CREATOR, DATE);
+        super(DATE);
         this.CONTENT = CONTENT;
         this.SOURCE = R.drawable.facebook_icon;
         this.LINK = LINK;

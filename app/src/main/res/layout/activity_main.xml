@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+
 <android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -27,6 +29,9 @@
             android:layout_height="wrap_content"
             android:theme="@style/AppTheme.AppBarOverlay">
 
+
+
+
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
@@ -52,12 +57,21 @@
             tools:context="com.example.bcosaj.k335.MainActivity">
             <!--tools:showIn="@layout/main">-->
 
-            <ListView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/main_news_list">
 
-            </ListView>
+            <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/swipe_refresh_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ListView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/main_news_list">
+
+
+                </ListView>
+
+            </android.support.v4.widget.SwipeRefreshLayout>
 
         </RelativeLayout>
         <!-- main_content File ___________________________________________________________________________ -->
@@ -66,3 +80,4 @@
     <!-- main File ___________________________________________________________________________ -->
 
 </android.support.v4.widget.DrawerLayout>
+
