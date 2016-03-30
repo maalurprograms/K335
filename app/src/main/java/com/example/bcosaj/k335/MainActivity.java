@@ -1,5 +1,6 @@
 package com.example.bcosaj.k335;
 
+// Imports
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -50,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private static String TAG = "TEST";
 
+    // Initialize post list
     ArrayList<Post> posts = new ArrayList<>();
     PostAdapter newsAdapter;
 
@@ -68,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        // Define account usernames
         PREFS = this.getSharedPreferences("com.example.bcosaj.k335", Context.MODE_PRIVATE);
         PERSON = PREFS.getString("PERSON", "");
         if (PERSON.equals("")){
@@ -88,18 +91,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         newsAdapter = new PostAdapter(this, R.layout.item_list_layout, posts);
         news.setAdapter(newsAdapter);
 
+        // Fetch content from accounts
         YoutubeFetch(YOUTUBE_ACCOUNT);
         jsonFetchInstagram(INSTAGRAM_ACCOUNT);
         parseTwitter(TWITTER_ACCOUNT);
         jsonFetchFacebook(FACEBOOK_ACCOUNT);
     }
-
+    /**
+     * Add a post to the post array
+     * @param post - New post content
+     */
     public void addPost(Post post){
         posts.add(post);
         newsAdapter.postList = posts;
         newsAdapter.notifyDataSetChanged();
     }
 
+    /**
+     * Fetch youtube playlist id and execute function to retrieve videos
+     * @param username - username of youtube channel
+     */
     private void YoutubeFetch(final String username)
     {
         new AsyncTask<String, String, String>()
@@ -133,6 +144,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }.execute();
     }
 
+    /**
+     * Fetch youtube video from a specified channel
+     * @param url - url of video query string
+     */
     private void jsonFetchVideo(String url)
     {
         new AsyncTask<String, String, String>()
@@ -168,7 +183,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }.execute(url);
     }
 
-
+    /**
+     * Parse JSON and retrieve youtube video data
+     * @param jsonstring - The jsonstring which we parse
+     */
     private List parseVideoId(String jsonstring) {
         Log.v(TAG, "Starting parse....");
         ArrayAdapter temps = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
@@ -206,7 +224,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             return error;
         }
     }
-
+    /**
+     * Parse JSON and retrieve youtube playlist id of whose videos we want to eventually retrieve
+     * @param jsonstring - The jsonstring which we parse
+     */
     private String parsePlaylistId(String jsonstring) {
         Log.v(TAG, "Starting parse....");
         ArrayAdapter temps = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
@@ -225,6 +246,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    /**
+     * Fetch Instagram posts by username
+     * @param username - The username of whose posts we want to fetch
+     */
     private void jsonFetchInstagram(final String username)
     {
         new AsyncTask<String, String, String>()
@@ -261,6 +286,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }.execute();
     }
 
+    /**
+     * Parse JSON and retrieve Instagram images and general data
+     * @param jsonstring - The jsonstring which we parse
+     */
     private List parseInsta(String jsonstring) {
         Log.v(TAG, "Starting parse....");
         try {
@@ -304,6 +333,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    /**
+     * Fetch Facebook posts
+     * @param username- Username of the facebook user of whose posts we want to retrieve
+     */
     private void jsonFetchFacebook(final String username)
     {
         new AsyncTask<String, String, String>()
@@ -339,6 +372,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }.execute();
     }
 
+    /**
+     * Parse JSON and retrieve facebook post data
+     * @param jsonstring - The jsonstring which we parse
+     */
     private List parseFcbk(String jsonstring) {
         Log.v(TAG, "Starting parse....");
         try {
@@ -461,6 +498,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             TextView date;
         }
 
+        /**
+         * Define page view
+         */
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
 
