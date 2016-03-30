@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         YoutubeFetch("https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forUsername=LinusTechTips&key=AIzaSyDSkGmwHSqOMxvfF0XtlqbjTIUqkDwTEyU");
         jsonFetchInstagram("https://www.instagram.com/linustech/media/");
-        jsonFetchFacebook("https://graph.facebook.com/v2.5/JustinBieber/posts?fields=message,picture,link,created_time,full_picture,from&access_token=1714995048785684|a14d423aecca89d7b40426c471243652");
+        jsonFetchFacebook("https://graph.facebook.com/v2.5/LinusTech/posts?fields=message,picture,link,created_time,full_picture,from&access_token=1714995048785684|a14d423aecca89d7b40426c471243652");
         new TwitterTask().execute();
     }
 
@@ -322,20 +322,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             JSONObject jsonObj = new JSONObject(jsonstring);
             Log.v(TAG, jsonObj.toString());
             JSONArray data = jsonObj.getJSONArray("data");
-            for (int i = 0; i<3; i++) {
+            for (int i = 0; i<4; i++) {
                 JSONObject o = data.getJSONObject(i);
                 JSONObject from = o.getJSONObject("from");
                 Log.v(TAG, o.toString());
                 String text = " ";
+                String link = " ";
+                String image = " ";
                 try {
                     text = o.getString("message");
                 }
                 catch (JSONException e) {
                     text = " ";
                 }
-                String link = o.getString("link");
+                try {
+                    link = o.getString("link");
+                }
+                catch (JSONException e) {
+                    link = " ";
+                }
+                try {
+                    image = o.getString("full_picture");
+                }
+                catch (JSONException e) {
+                    image = " ";
+                }
                 String time = o.getString("created_time");
-                String image = o.getString("full_picture");
                 String name = from.getString("name");
 
                 Log.v(TAG, "FACEBOOOK URL: " + link.toString());
@@ -465,9 +477,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             } else if(post instanceof FacebookPost){
                 final FacebookPost convertedPost = (FacebookPost)post;
                 holder.content_decription.setText(convertedPost.CONTENT);
-                new DownloadImageTask(convertedPost.IMAGE ,holder.contentYT_I).execute();
+                Log.v(TAG, "AHDFKHSKFJD: " + convertedPost.IMAGE.toString());
+                if (convertedPost.toString().length() < 10 ){
+                    holder.contentYT_I.setVisibility(View.GONE);
+                }
+                else
+                {
+                    new DownloadImageTask(convertedPost.IMAGE ,holder.contentYT_I).execute();
+                    holder.contentYT_I.setVisibility(View.VISIBLE);
+                }
                 holder.contentT_FB.setVisibility(View.GONE);
-                holder.contentYT_I.setVisibility(View.VISIBLE);
                 holder.content_decription.setVisibility(View.VISIBLE);
 
                 holder.contentYT_I.setOnClickListener(new View.OnClickListener() {
