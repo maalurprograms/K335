@@ -10,6 +10,7 @@ import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -35,6 +36,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -71,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setSupportActionBar(toolbar);
 
         // Define account usernames
-        PREFS = this.getSharedPreferences("com.example.bcosaj.k335", Context.MODE_PRIVATE);
+        PREFS = PreferenceManager.getDefaultSharedPreferences(this);
         PERSON = PREFS.getString("PERSON", "");
         if (PERSON.equals("")){
             PERSON = "Linus Tech Tips";
@@ -79,12 +81,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             TWITTER_ACCOUNT = "LinusTech";
             FACEBOOK_ACCOUNT = "LinusTech";
             INSTAGRAM_ACCOUNT = "linustech";
+            PREFS.edit().putString("PERSON", PERSON).commit();
             PREFS.edit().putString(PERSON, YOUTUBE_ACCOUNT+":"+TWITTER_ACCOUNT+":"+FACEBOOK_ACCOUNT+":"+INSTAGRAM_ACCOUNT).commit();
         }else {
-            YOUTUBE_ACCOUNT = PREFS.getString(PERSON, "").split(":")[0];
-            TWITTER_ACCOUNT = PREFS.getString(PERSON, "").split(":")[1];
-            FACEBOOK_ACCOUNT = PREFS.getString(PERSON, "").split(":")[2];
-            INSTAGRAM_ACCOUNT = PREFS.getString(PERSON, "").split(":")[3];
+            String lol = PREFS.getString(PERSON, "");
+            String[] data = PREFS.getString(PERSON, "").split(":");
+            YOUTUBE_ACCOUNT = data[0];
+            TWITTER_ACCOUNT = data[1];
+            FACEBOOK_ACCOUNT = data[2];
+            INSTAGRAM_ACCOUNT = data[3];
         }
 
         ListView news = (ListView)findViewById(R.id.main_news_list);
@@ -447,7 +452,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // TODO Auto-generated method stub
         Log.i("INFO", "Pressed");
         Intent intent = new Intent(this, UserSettings.class);
-        intent.putExtra("PERSONS", PERSON);
+        intent.putExtra("PERSON", PERSON);
         startActivity(intent);
         return super.onOptionsItemSelected(item);
     }
@@ -542,7 +547,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 holder.content_decription.setVisibility(View.GONE);
 
             } else if(post instanceof FacebookPost){
-                final FacebookPost convertedPost = (FacebookPost)post;
+                final FacebookPost convertedPost = (FacebookPost) post;
                 holder.content_decription.setText(convertedPost.CONTENT);
                 Log.v(TAG, "AHDFKHSKFJD: " + convertedPost.IMAGE.toString());
                 if (convertedPost.toString().length() < 10 ){

@@ -10,14 +10,15 @@
     tools:context="com.example.bcosaj.k335.UserSettings">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/settings"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Add User:"
+            android:text="Add User/Edit User:"
             android:textSize="30dp"/>
 
         <LinearLayout
@@ -33,6 +34,7 @@
                 android:layout_marginRight="5dp"/>
 
             <EditText
+                android:id="@+id/app_username"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Username for this App"
@@ -53,6 +55,7 @@
                 android:layout_marginRight="5dp"/>
 
             <EditText
+                android:id="@+id/yt_username"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Username for Youtube"
@@ -73,6 +76,7 @@
                 android:layout_marginRight="5dp"/>
 
             <EditText
+                android:id="@+id/t_username"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Username for Twitter"
@@ -93,6 +97,28 @@
                 android:layout_marginRight="5dp"/>
 
             <EditText
+                android:id="@+id/i_username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Username for Instagram"
+                android:textSize="15dp"
+                android:layout_marginRight="20dp"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/facebook_icon"
+                android:layout_marginRight="5dp"/>
+
+            <EditText
+                android:id="@+id/f_username"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Username for Instagram"
@@ -103,5 +129,12 @@
 
     </LinearLayout>
 
+    <ImageView
+        android:id="@+id/settings_save"
+        android:layout_below="@+id/settings"
+        android:layout_centerHorizontal="true"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/ic_check_24dp"/>
 
 </RelativeLayout>
