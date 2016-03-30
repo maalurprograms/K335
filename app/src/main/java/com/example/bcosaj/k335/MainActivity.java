@@ -61,17 +61,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
         ListView news = (ListView)findViewById(R.id.main_news_list);
         newsAdapter = new PostAdapter(this, R.layout.item_list_layout, posts);
         news.setAdapter(newsAdapter);
 
         YoutubeFetch("https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forUsername=LinusTechTips&key=AIzaSyDSkGmwHSqOMxvfF0XtlqbjTIUqkDwTEyU");
         jsonFetchInstagram("https://www.instagram.com/linustech/media/");
+
         new TwitterTask(){
             @Override
             public void onPostExecute(List<twitter4j.Status> statuses) {
@@ -305,6 +301,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onOptionsItemSelected(MenuItem item) {
         // TODO Auto-generated method stub
         Log.i("INFO", "Pressed");
+        startActivity(new Intent(this, UserSettings.class));
         return super.onOptionsItemSelected(item);
     }
 
