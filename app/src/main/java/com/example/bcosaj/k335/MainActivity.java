@@ -2,6 +2,7 @@ package com.example.bcosaj.k335;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.Image;
@@ -364,7 +365,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     image = " ";
                 }
                 String time = o.getString("created_time");
-                String image = o.getString("full_picture");
                 String name = from.getString("name");
 
                 Log.v(TAG, "FACEBOOOK URL: " + link.toString());
