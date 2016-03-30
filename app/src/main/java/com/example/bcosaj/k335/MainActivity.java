@@ -404,12 +404,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 final YouTubePost convertedPost = (YouTubePost) post;
 
                 new DownloadImageTask(convertedPost.CONTENT ,holder.contentYT_I).execute();
-
-                holder.content_decription.setText(convertedPost.VIDEOTITLE);
-                holder.contentT_FB.setVisibility(View.GONE);
-                holder.contentYT_I.setVisibility(View.VISIBLE);
-                holder.content_decription.setVisibility(View.VISIBLE);
-
                 holder.contentYT_I.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
