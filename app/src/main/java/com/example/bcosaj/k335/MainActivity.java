@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         newsAdapter = new PostAdapter(this, R.layout.item_list_layout, posts);
         news.setAdapter(newsAdapter);
 
-        YoutubeFetch("https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forUsername=OneDirectionVEVO&key=AIzaSyDSkGmwHSqOMxvfF0XtlqbjTIUqkDwTEyU");
+        YoutubeFetch("https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forUsername=LinusTechTips&key=AIzaSyDSkGmwHSqOMxvfF0XtlqbjTIUqkDwTEyU");
         jsonFetchInstagram("https://www.instagram.com/pewdiepie/media/");
         new TwitterTask(){
             @Override
@@ -122,7 +122,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             {
                 String playlistId = parsePlaylistId(result);
                 Log.i(TAG, "PLAYLIST ID: " + playlistId);
-                jsonFetchVideo("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=UUbW18JZRgko_mOGm5er8Yzg&key=AIzaSyDSkGmwHSqOMxvfF0XtlqbjTIUqkDwTEyU");
+                String queryString = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId="+playlistId.toString()+"&key=AIzaSyDSkGmwHSqOMxvfF0XtlqbjTIUqkDwTEyU";
+                Log.i(TAG, "QUERYSTRING: " + queryString);
+                jsonFetchVideo(queryString);
             }
         }.execute(url);
     }
@@ -208,9 +210,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             JSONObject jsonObj = new JSONObject(jsonstring);
             JSONArray items = jsonObj.getJSONArray("items");
             JSONObject o = items.getJSONObject(0);
-            String videoid = o.getString("id");
-            Log.v(TAG, videoid); // GOT ID!!
-            return videoid;
+            JSONObject details = o.getJSONObject("contentDetails");
+            JSONObject playlists = details.getJSONObject("relatedPlaylists");
+            String uploads = playlists.getString("uploads");
+            Log.v(TAG, uploads); // GOT ID!!
+            return uploads;
         } catch (JSONException e) {
             e.printStackTrace();
             return "";
@@ -400,6 +404,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 final YouTubePost convertedPost = (YouTubePost) post;
 
                 new DownloadImageTask(convertedPost.CONTENT ,holder.contentYT_I).execute();
+
+                holder.content_decription.setText(convertedPost.VIDEOTITLE);
+                holder.contentT_FB.setVisibility(View.GONE);
+                holder.contentYT_I.setVisibility(View.VISIBLE);
+                holder.content_decription.setVisibility(View.VISIBLE);
+
                 holder.contentYT_I.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -455,5 +465,50 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         protected void onPostExecute(Bitmap result) {
             yt_thumbnail_view.setImageBitmap(result);
         }
+    }
+
+    private class TwitterTask extends AsyncTask<String, Integer, List<Status>> {
+
+        @Override
+        protected List<twitter4j.Status> doInBackground(String... urls) {
+            ConfigurationBuilder cb = new ConfigurationBuilder();
+            cb.setDebugEnabled(true)
+                    .setOAuthConsumerKey(AccessTokens.TWITTER_CONSUMER_KEY)
+                    .setOAuthConsumerSecret(
+                            AccessTokens.TWITTER_CONSUMER_SECRET)
+                    .setOAuthAccessToken(
+                            AccessTokens.TWITTER_ACCESS_TOKEN)
+                    .setOAuthAccessTokenSecret(
+                            AccessTokens.TWITTER_ACCESS_TOKEN_SECRET);
+            TwitterFactory tf = new TwitterFactory(cb.build());
+            Twitter twitter = tf.getInstance();
+            List<twitter4j.Status> statuses = null;
+            try {
+                String user;
+                user = "LinusTech";
+                statuses = twitter.getUserTimeline(user);
+                Log.i("Status Count", statuses.size() + " Feeds");
+                return statuses;
+            } catch (TwitterException te) {
+                te.printStackTrace();
+            }
+            return statuses;
+        }
+
+        @Override
+        protected void onPostExecute(List<twitter4j.Status> statuses) {
+            if(statuses == null) {
+                Log.v("twitter", "No statuses to show");
+            }
+            int count = 1;
+            for (twitter4j.Status status:statuses) {
+                if (count == 5){
+                    break;
+                }
+                addPost(new TwitterPost(status.getUser().getName(), status.getText(), status.getCreatedAt().toString()));
+                count++;
+            }
+        }
+
     }
 }
