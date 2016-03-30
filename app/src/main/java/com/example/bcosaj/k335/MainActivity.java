@@ -374,6 +374,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onOptionsItemSelected(MenuItem item) {
         // TODO Auto-generated method stub
         Log.i("INFO", "Pressed");
+        startActivity(new Intent(this, UserSettings.class));
         return super.onOptionsItemSelected(item);
     }
 
@@ -481,22 +482,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 final YouTubePost convertedPost = (YouTubePost) post;
 
                 new DownloadImageTask(convertedPost.CONTENT ,holder.contentYT_I).execute();
-
-                holder.content_decription.setText(convertedPost.VIDEOTITLE);
-                holder.contentT_FB.setVisibility(View.GONE);
-                holder.contentYT_I.setVisibility(View.VISIBLE);
-                holder.content_decription.setVisibility(View.VISIBLE);
-
                 holder.contentYT_I.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         startActivity(new Intent(Intent.ACTION_VIEW, convertedPost.LINK));
                     }
                 });
+
+                holder.content_decription.setText(convertedPost.VIDEOTITLE);
+                holder.contentT_FB.setVisibility(View.GONE);
+                holder.contentYT_I.setVisibility(View.VISIBLE);
+                holder.content_decription.setVisibility(View.VISIBLE);
+
             } else{
                 InstagramPost convertedPost = (InstagramPost) post;
                 new DownloadImageTask(convertedPost.CONTENT ,holder.contentYT_I).execute();
                 holder.content_decription.setText(convertedPost.IMAGETITLE);
+
+                holder.contentYT_I.setOnClickListener(null);
 
                 holder.contentT_FB.setVisibility(View.GONE);
                 holder.contentYT_I.setVisibility(View.VISIBLE);
@@ -504,9 +507,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
 
             return convertView;
-
         }
-
     }
 
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
@@ -578,6 +579,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 count++;
             }
         }
-
     }
 }
