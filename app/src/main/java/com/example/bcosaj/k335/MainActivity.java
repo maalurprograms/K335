@@ -253,7 +253,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Log.i(TAG, "Instagram Data: " + InstaDataList);
                 for (int i = 0; i < InstaDataList.size(); i++) {
                     List InstaData = (ArrayList)InstaDataList.get(i);
-                    addPost(new InstagramPost(InstaData.get(2).toString(), Uri.parse(InstaData.get(0).toString()), InstaData.get(1).toString(), "823948"));
+                    addPost(new InstagramPost(InstaData.get(2).toString(), Uri.parse(InstaData.get(0).toString()), InstaData.get(1).toString(), InstaData.get(3).toString()));
                 }
 
             }
@@ -277,6 +277,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 String text = caption.getString("text");
                 String name = from.getString("full_name");
                 String url = standard_resolution.getString("url");
+                String time = caption.getString("created_time");
 
                 Log.v(TAG, "URL: " + url.toString());
                 Log.v(TAG, "TEXT: " + text.toString());
@@ -286,6 +287,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 InstaData.add(url);
                 InstaData.add(text);
                 InstaData.add(name);
+                InstaData.add(time);
                 InstaDataList.add(InstaData);
             }
 
