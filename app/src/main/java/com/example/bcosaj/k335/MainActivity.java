@@ -311,7 +311,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     List FcbkData = (ArrayList)FcbkDataList.get(i);
                     addPost(new FacebookPost(FcbkData.get(4).toString(),FcbkData.get(2).toString(), FcbkData.get(0).toString(), Uri.parse(FcbkData.get(3).toString()), Uri.parse(FcbkData.get(1).toString())));
                 }
-
             }
         }.execute(url);
     }
