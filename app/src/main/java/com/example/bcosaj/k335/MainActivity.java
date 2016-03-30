@@ -2,6 +2,7 @@ package com.example.bcosaj.k335;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.Image;
@@ -51,7 +52,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     ArrayList<Post> posts = new ArrayList<>();
     PostAdapter newsAdapter;
 
-    ArrayList<String> followingPersons;
+    private SharedPreferences PREFS;
+    private String PERSON;
+    private String YOUTUBE_ACCOUNT;
+    private String TWITTER_ACCOUNT;
+    private String FACEBOOK_ACCOUNT;
+    private String INSTAGRAM_ACCOUNT;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,19 +68,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
+        PREFS = this.getSharedPreferences("com.example.bcosaj.k335", Context.MODE_PRIVATE);
+        PERSON = PREFS.getString("PERSON", "");
+        if (PERSON.equals("")){
+            PERSON = "Linus Tech Tips";
+            YOUTUBE_ACCOUNT = "LinusTechTips";
+            TWITTER_ACCOUNT = "LinusTech";
+            FACEBOOK_ACCOUNT = "LinusTech";
+            INSTAGRAM_ACCOUNT = "linustech";
+            PREFS.edit().putString(PERSON, YOUTUBE_ACCOUNT+":"+TWITTER_ACCOUNT+":"+FACEBOOK_ACCOUNT+":"+INSTAGRAM_ACCOUNT).commit();
+        }else {
+            YOUTUBE_ACCOUNT = PREFS.getString(PERSON, "").split(":")[0];
+            TWITTER_ACCOUNT = PREFS.getString(PERSON, "").split(":")[1];
+            FACEBOOK_ACCOUNT = PREFS.getString(PERSON, "").split(":")[2];
+            INSTAGRAM_ACCOUNT = PREFS.getString(PERSON, "").split(":")[3];
+        }
 
         ListView news = (ListView)findViewById(R.id.main_news_list);
         newsAdapter = new PostAdapter(this, R.layout.item_list_layout, posts);
         news.setAdapter(newsAdapter);
 
-        YoutubeFetch("https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forUsername=LinusTechTips&key=AIzaSyDSkGmwHSqOMxvfF0XtlqbjTIUqkDwTEyU");
-        jsonFetchInstagram("https://www.instagram.com/linustech/media/");
-        jsonFetchFacebook("https://graph.facebook.com/v2.5/JustinBieber/posts?fields=message,picture,link,created_time,full_picture,from&access_token=1714995048785684|a14d423aecca89d7b40426c471243652");
-        new TwitterTask().execute();
+        YoutubeFetch(YOUTUBE_ACCOUNT);
+        jsonFetchInstagram(INSTAGRAM_ACCOUNT);
+        parseTwitter(TWITTER_ACCOUNT);
+        jsonFetchFacebook(FACEBOOK_ACCOUNT);
     }
 
     public void addPost(Post post){
@@ -82,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         newsAdapter.notifyDataSetChanged();
     }
 
-    private void YoutubeFetch(String url)
+    private void YoutubeFetch(final String username)
     {
         new AsyncTask<String, String, String>()
         {
@@ -91,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 String msg = "";
                 try
                 {
-                    URL url = new URL(badi[0]);
+                    URL url = new URL("https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forUsername=" + username + "&key=AIzaSyDSkGmwHSqOMxvfF0XtlqbjTIUqkDwTEyU");
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     msg = IOUtils.toString(conn.getInputStream());
                     Log.v(TAG, "Loaded data successfully");
@@ -112,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Log.i(TAG, "QUERYSTRING: " + queryString);
                 jsonFetchVideo(queryString);
             }
-        }.execute(url);
+        }.execute();
     }
 
     private void jsonFetchVideo(String url)
@@ -207,7 +225,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    private void jsonFetchInstagram(String url)
+    private void jsonFetchInstagram(final String username)
     {
         new AsyncTask<String, String, String>()
         {
@@ -216,7 +234,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 String msg = "";
                 try
                 {
-                    URL url = new URL(badi[0]);
+                    URL url = new URL("https://www.instagram.com/" + username + "/media/");
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     msg = IOUtils.toString(conn.getInputStream());
                     Log.v(TAG, "Loaded data successfully");
@@ -240,7 +258,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
 
             }
-        }.execute(url);
+        }.execute();
     }
 
     private List parseInsta(String jsonstring) {
@@ -280,7 +298,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    private void jsonFetchFacebook(String url)
+    private void jsonFetchFacebook(final String username)
     {
         new AsyncTask<String, String, String>()
         {
@@ -289,7 +307,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 String msg = "";
                 try
                 {
-                    URL url = new URL(badi[0]);
+                    URL url = new URL("https://graph.facebook.com/v2.5/"+username+"/posts?fields=message,picture,link,created_time,full_picture,from&access_token="+AccessTokens.FACEBOOK_TOKEN);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     msg = IOUtils.toString(conn.getInputStream());
                     Log.v(TAG, "Loaded data successfully");
@@ -312,7 +330,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     addPost(new FacebookPost(FcbkData.get(4).toString(),FcbkData.get(2).toString(), FcbkData.get(0).toString(), Uri.parse(FcbkData.get(3).toString()), Uri.parse(FcbkData.get(1).toString())));
                 }
             }
-        }.execute(url);
+        }.execute();
     }
 
     private List parseFcbk(String jsonstring) {
@@ -373,7 +391,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onOptionsItemSelected(MenuItem item) {
         // TODO Auto-generated method stub
         Log.i("INFO", "Pressed");
-        startActivity(new Intent(this, UserSettings.class));
+        Intent intent = new Intent(this, UserSettings.class);
+        intent.putExtra("PERSONS", PERSON);
+        startActivity(intent);
         return super.onOptionsItemSelected(item);
     }
 
@@ -453,6 +473,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             holder.srclogo.setImageResource(post.SOURCE);
             holder.creator.setText(post.CREATOR);
             holder.date.setText(post.DATE);
+            holder.contentYT_I.setOnClickListener(null);
 
             if (post instanceof TwitterPost){
                 TwitterPost convertedPost = (TwitterPost)post;
@@ -497,8 +518,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 InstagramPost convertedPost = (InstagramPost) post;
                 new DownloadImageTask(convertedPost.CONTENT ,holder.contentYT_I).execute();
                 holder.content_decription.setText(convertedPost.IMAGETITLE);
-
-                holder.contentYT_I.setOnClickListener(null);
 
                 holder.contentT_FB.setVisibility(View.GONE);
                 holder.contentYT_I.setVisibility(View.VISIBLE);
@@ -578,5 +597,48 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 count++;
             }
         }
+    }
+
+    private void parseTwitter(final String username){
+        new AsyncTask<String, Integer, List<Status>>(){
+            @Override
+            protected List<twitter4j.Status> doInBackground(String... urls) {
+                ConfigurationBuilder cb = new ConfigurationBuilder();
+                cb.setDebugEnabled(true)
+                        .setOAuthConsumerKey(AccessTokens.TWITTER_CONSUMER_KEY)
+                        .setOAuthConsumerSecret(
+                                AccessTokens.TWITTER_CONSUMER_SECRET)
+                        .setOAuthAccessToken(
+                                AccessTokens.TWITTER_ACCESS_TOKEN)
+                        .setOAuthAccessTokenSecret(
+                                AccessTokens.TWITTER_ACCESS_TOKEN_SECRET);
+                TwitterFactory tf = new TwitterFactory(cb.build());
+                Twitter twitter = tf.getInstance();
+                List<twitter4j.Status> statuses = null;
+                try {
+                    statuses = twitter.getUserTimeline(username);
+                    Log.i("Status Count", statuses.size() + " Feeds");
+                    return statuses;
+                } catch (TwitterException te) {
+                    te.printStackTrace();
+                }
+                return statuses;
+            }
+
+            @Override
+            public void onPostExecute(List<twitter4j.Status> statuses) {
+                if(statuses == null) {
+                    Log.v("twitter", "No statuses to show");
+                }
+                int count = 1;
+                for (twitter4j.Status status:statuses) {
+                    if (count == 5){
+                        break;
+                    }
+                    addPost(new TwitterPost(status.getUser().getName(), status.getText(), status.getCreatedAt().toString()));
+                    count++;
+                }
+            }
+        }.execute();
     }
 }

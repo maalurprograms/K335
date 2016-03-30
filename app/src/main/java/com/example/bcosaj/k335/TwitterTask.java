@@ -16,6 +16,12 @@ import twitter4j.conf.ConfigurationBuilder;
  */
 abstract class TwitterTask extends AsyncTask<String, Integer, List<Status>> {
 
+    private String USERNAME;
+
+    public TwitterTask(String USERNAME) {
+        this.USERNAME = USERNAME;
+    }
+
     @Override
     protected List<twitter4j.Status> doInBackground(String... urls) {
         ConfigurationBuilder cb = new ConfigurationBuilder();
@@ -31,9 +37,7 @@ abstract class TwitterTask extends AsyncTask<String, Integer, List<Status>> {
         Twitter twitter = tf.getInstance();
         List<twitter4j.Status> statuses = null;
         try {
-            String user;
-            user = "LinusTech";
-            statuses = twitter.getUserTimeline(user);
+            statuses = twitter.getUserTimeline(USERNAME);
             Log.i("Status Count", statuses.size() + " Feeds");
             return statuses;
         } catch (TwitterException te) {
