@@ -37,6 +37,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import twitter4j.Status;
@@ -279,6 +280,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 String url = standard_resolution.getString("url");
                 String time = caption.getString("created_time");
 
+                long created_time = Long.parseLong((String) time);
+                Date date = new Date(created_time * 1000);
+
+
                 Log.v(TAG, "URL: " + url.toString());
                 Log.v(TAG, "TEXT: " + text.toString());
                 Log.v(TAG, "NAME: " + name.toString());
@@ -287,7 +292,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 InstaData.add(url);
                 InstaData.add(text);
                 InstaData.add(name);
-                InstaData.add(time);
+                InstaData.add(date);
                 InstaDataList.add(InstaData);
             }
 
