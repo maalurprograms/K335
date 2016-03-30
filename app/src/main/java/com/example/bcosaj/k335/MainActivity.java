@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         YoutubeFetch("https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forUsername=LinusTechTips&key=AIzaSyDSkGmwHSqOMxvfF0XtlqbjTIUqkDwTEyU");
         jsonFetchInstagram("https://www.instagram.com/linustech/media/");
+        jsonFetchFacebook("https://graph.facebook.com/v2.5/JustinBieber/posts?fields=message,picture,link,created_time,full_picture,from&access_token=1714995048785684|a14d423aecca89d7b40426c471243652");
         new TwitterTask().execute();
     }
 
@@ -279,6 +280,89 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    private void jsonFetchFacebook(String url)
+    {
+        new AsyncTask<String, String, String>()
+        {
+            @Override
+            protected String doInBackground(String[] badi) {
+                String msg = "";
+                try
+                {
+                    URL url = new URL(badi[0]);
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    msg = IOUtils.toString(conn.getInputStream());
+                    Log.v(TAG, "Loaded data successfully");
+                }
+                catch(Exception e)
+                {
+                    Log.v(TAG, "Exception while loading data");
+                    e.printStackTrace();
+                }
+                return msg;
+            }
+
+            public void onPostExecute(String result)
+            {
+
+                List FcbkDataList = parseFcbk(result);
+                Log.i(TAG, "Facebook Data: " + FcbkDataList);
+                for (int i = 0; i < FcbkDataList.size(); i++) {
+                    List FcbkData = (ArrayList)FcbkDataList.get(i);
+                    addPost(new FacebookPost(FcbkData.get(4).toString(),FcbkData.get(2).toString(), FcbkData.get(0).toString(), Uri.parse(FcbkData.get(3).toString()), Uri.parse(FcbkData.get(1).toString())));
+                }
+
+            }
+        }.execute(url);
+    }
+
+    private List parseFcbk(String jsonstring) {
+        Log.v(TAG, "Starting parse....");
+        try {
+            List FcbkDataList = new ArrayList();
+            JSONObject jsonObj = new JSONObject(jsonstring);
+            Log.v(TAG, jsonObj.toString());
+            JSONArray data = jsonObj.getJSONArray("data");
+            for (int i = 0; i<3; i++) {
+                JSONObject o = data.getJSONObject(i);
+                JSONObject from = o.getJSONObject("from");
+                Log.v(TAG, o.toString());
+                String text = " ";
+                try {
+                    text = o.getString("message");
+                }
+                catch (JSONException e) {
+                    text = " ";
+                }
+                String link = o.getString("link");
+                String time = o.getString("created_time");
+                String image = o.getString("full_picture");
+                String name = from.getString("name");
+
+                Log.v(TAG, "FACEBOOOK URL: " + link.toString());
+                Log.v(TAG, "FACEBOOOK TEXT: " + text.toString());
+                Log.v(TAG, "FACEBOOOK NAME: " + name.toString());
+                Log.v(TAG, "FACEBOOOK TIME: " + time.toString());
+                Log.v(TAG, "FACEBOOOK IMAGE: " + image.toString());
+
+                List FcbkData = new ArrayList();
+                FcbkData.add(text);
+                FcbkData.add(link);
+                FcbkData.add(time);
+                FcbkData.add(image);
+                FcbkData.add(name);
+                FcbkDataList.add(FcbkData);
+            }
+            Log.v(TAG, FcbkDataList.toString());
+            return FcbkDataList;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            List error = new ArrayList();
+            return error;
+        }
+    }
+
+
 
 
     @Override
@@ -379,12 +463,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 holder.content_decription.setVisibility(View.GONE);
 
             } else if(post instanceof FacebookPost){
-                FacebookPost convertedPost = (FacebookPost)post;
-                holder.contentT_FB.setText(convertedPost.CONTENT);
+                final FacebookPost convertedPost = (FacebookPost)post;
+                holder.content_decription.setText(convertedPost.CONTENT);
+                new DownloadImageTask(convertedPost.IMAGE ,holder.contentYT_I).execute();
+                holder.contentT_FB.setVisibility(View.GONE);
+                holder.contentYT_I.setVisibility(View.VISIBLE);
+                holder.content_decription.setVisibility(View.VISIBLE);
 
-                holder.contentT_FB.setVisibility(View.VISIBLE);
-                holder.contentYT_I.setVisibility(View.GONE);
-                holder.content_decription.setVisibility(View.GONE);
+                holder.contentYT_I.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        startActivity(new Intent(Intent.ACTION_VIEW, convertedPost.LINK));
+                    }
+                });
+
             }else if (post instanceof YouTubePost) {
                 final YouTubePost convertedPost = (YouTubePost) post;
 
