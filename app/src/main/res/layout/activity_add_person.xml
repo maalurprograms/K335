@@ -6,6 +6,12 @@
     android:layout_marginLeft="20dp"
     android:layout_marginTop="20dp">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add User:"
+        android:textSize="30dp"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -18,10 +24,11 @@
             android:layout_marginRight="5dp"/>
 
         <EditText
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Username for this App"
-            android:textSize="25dp"/>
+            android:textSize="25dp"
+            android:layout_marginRight="20dp"/>
 
     </LinearLayout>
 
@@ -37,10 +44,11 @@
             android:layout_marginRight="5dp"/>
 
         <EditText
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Username for Youtube"
-            android:textSize="25dp"/>
+            android:textSize="25dp"
+            android:layout_marginRight="20dp"/>
 
     </LinearLayout>
 
@@ -56,10 +64,11 @@
             android:layout_marginRight="5dp"/>
 
         <EditText
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Username for Twitter"
-            android:textSize="25dp"/>
+            android:textSize="25dp"
+            android:layout_marginRight="20dp"/>
 
     </LinearLayout>
 
@@ -75,10 +84,11 @@
             android:layout_marginRight="5dp"/>
 
         <EditText
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Username for Instagram"
-            android:textSize="25dp"/>
+            android:textSize="25dp"
+            android:layout_marginRight="20dp"/>
 
     </LinearLayout>
 

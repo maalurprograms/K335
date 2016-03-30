@@ -72,7 +72,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         YoutubeFetch("https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forUsername=OneDirectionVEVO&key=AIzaSyDSkGmwHSqOMxvfF0XtlqbjTIUqkDwTEyU");
         jsonFetchInstagram("https://www.instagram.com/pewdiepie/media/");
-        new TwitterTask().execute();
+        new TwitterTask(){
+            @Override
+            public void onPostExecute(List<twitter4j.Status> statuses) {
+                if(statuses == null) {
+                    Log.v("twitter", "No statuses to show");
+                }
+                int count = 1;
+                for (twitter4j.Status status:statuses) {
+                    if (count == 5){
+                        break;
+                    }
+                    addPost(new TwitterPost(status.getUser().getName(), status.getText(), status.getCreatedAt().toString()));
+                    count++;
+                }
+            }
+        }.execute();
     }
 
     public void addPost(Post post){
@@ -385,22 +400,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 final YouTubePost convertedPost = (YouTubePost) post;
 
                 new DownloadImageTask(convertedPost.CONTENT ,holder.contentYT_I).execute();
-
-                holder.content_decription.setText(convertedPost.VIDEOTITLE);
-                holder.contentT_FB.setVisibility(View.GONE);
-                holder.contentYT_I.setVisibility(View.VISIBLE);
-                holder.content_decription.setVisibility(View.VISIBLE);
-
                 holder.contentYT_I.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         startActivity(new Intent(Intent.ACTION_VIEW, convertedPost.LINK));
                     }
                 });
+
+                holder.content_decription.setText(convertedPost.VIDEOTITLE);
+                holder.contentT_FB.setVisibility(View.GONE);
+                holder.contentYT_I.setVisibility(View.VISIBLE);
+                holder.content_decription.setVisibility(View.VISIBLE);
+
             } else{
                 InstagramPost convertedPost = (InstagramPost) post;
                 new DownloadImageTask(convertedPost.CONTENT ,holder.contentYT_I).execute();
                 holder.content_decription.setText(convertedPost.IMAGETITLE);
+
+                holder.contentYT_I.setOnClickListener(null);
 
                 holder.contentT_FB.setVisibility(View.GONE);
                 holder.contentYT_I.setVisibility(View.VISIBLE);
@@ -438,50 +455,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         protected void onPostExecute(Bitmap result) {
             yt_thumbnail_view.setImageBitmap(result);
         }
-    }
-
-    private class TwitterTask extends AsyncTask<String, Integer, List<Status>> {
-
-        @Override
-        protected List<twitter4j.Status> doInBackground(String... urls) {
-            ConfigurationBuilder cb = new ConfigurationBuilder();
-            cb.setDebugEnabled(true)
-                    .setOAuthConsumerKey(AccessTokens.TWITTER_CONSUMER_KEY)
-                    .setOAuthConsumerSecret(
-                            AccessTokens.TWITTER_CONSUMER_SECRET)
-                    .setOAuthAccessToken(
-                            AccessTokens.TWITTER_ACCESS_TOKEN)
-                    .setOAuthAccessTokenSecret(
-                            AccessTokens.TWITTER_ACCESS_TOKEN_SECRET);
-            TwitterFactory tf = new TwitterFactory(cb.build());
-            Twitter twitter = tf.getInstance();
-            List<twitter4j.Status> statuses = null;
-            try {
-                String user;
-                user = "LinusTechTips";
-                statuses = twitter.getUserTimeline(user);
-                Log.i("Status Count", statuses.size() + " Feeds");
-                return statuses;
-            } catch (TwitterException te) {
-                te.printStackTrace();
-            }
-            return statuses;
-        }
-
-        @Override
-        protected void onPostExecute(List<twitter4j.Status> statuses) {
-            if(statuses == null) {
-                Log.v("twitter", "No statuses to show");
-            }
-            int count = 1;
-            for (twitter4j.Status status:statuses) {
-                if (count == 5){
-                    break;
-                }
-                addPost(new TwitterPost(status.getUser().getName(), status.getText(), status.getCreatedAt().toString()));
-                count++;
-            }
-        }
-
     }
 }
