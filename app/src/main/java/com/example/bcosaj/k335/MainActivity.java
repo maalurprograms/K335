@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         news.setAdapter(newsAdapter);
 
         YoutubeFetch("https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forUsername=LinusTechTips&key=AIzaSyDSkGmwHSqOMxvfF0XtlqbjTIUqkDwTEyU");
-        jsonFetchInstagram("https://www.instagram.com/pewdiepie/media/");
+        jsonFetchInstagram("https://www.instagram.com/linustech/media/");
         new TwitterTask().execute();
     }
 
