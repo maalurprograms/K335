@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         newsAdapter = new PostAdapter(this, R.layout.item_list_layout, posts);
         news.setAdapter(newsAdapter);
 
-        YoutubeFetch("https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forUsername=OneDirectionVEVO&key=AIzaSyDSkGmwHSqOMxvfF0XtlqbjTIUqkDwTEyU");
+        YoutubeFetch("https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forUsername=LinusTechTips&key=AIzaSyDSkGmwHSqOMxvfF0XtlqbjTIUqkDwTEyU");
         jsonFetchInstagram("https://www.instagram.com/pewdiepie/media/");
         new TwitterTask().execute();
     }
@@ -107,7 +107,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             {
                 String playlistId = parsePlaylistId(result);
                 Log.i(TAG, "PLAYLIST ID: " + playlistId);
-                jsonFetchVideo("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=UUbW18JZRgko_mOGm5er8Yzg&key=AIzaSyDSkGmwHSqOMxvfF0XtlqbjTIUqkDwTEyU");
+                String queryString = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId="+playlistId.toString()+"&key=AIzaSyDSkGmwHSqOMxvfF0XtlqbjTIUqkDwTEyU";
+                Log.i(TAG, "QUERYSTRING: " + queryString);
+                jsonFetchVideo(queryString);
             }
         }.execute(url);
     }
@@ -193,9 +195,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             JSONObject jsonObj = new JSONObject(jsonstring);
             JSONArray items = jsonObj.getJSONArray("items");
             JSONObject o = items.getJSONObject(0);
-            String videoid = o.getString("id");
-            Log.v(TAG, videoid); // GOT ID!!
-            return videoid;
+            JSONObject details = o.getJSONObject("contentDetails");
+            JSONObject playlists = details.getJSONObject("relatedPlaylists");
+            String uploads = playlists.getString("uploads");
+            Log.v(TAG, uploads); // GOT ID!!
+            return uploads;
         } catch (JSONException e) {
             e.printStackTrace();
             return "";
@@ -458,7 +462,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             List<twitter4j.Status> statuses = null;
             try {
                 String user;
-                user = "LinusTechTips";
+                user = "LinusTech";
                 statuses = twitter.getUserTimeline(user);
                 Log.i("Status Count", statuses.size() + " Feeds");
                 return statuses;
