@@ -435,9 +435,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
 
             return convertView;
-
         }
-
     }
 
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
